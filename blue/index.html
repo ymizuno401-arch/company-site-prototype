@@ -221,6 +221,36 @@ footer a{text-decoration:none;padding:6px 0}
 </style>
 </head>
 <body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+
 
 <header>
 <div class="header-in">
