@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>会社サイト試作 BLUE系</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#F4F9FF; --surface:#FFFFFF; --surface2:#EAF4FF;
+--ink:#0A1E4A; --ink2:#3D4E73; --line:#D6E4F5;
+--sky:#00A8E8; --sky-deep:#0077C8; --navy:#0A1E4A; --navy2:#122A5E;
+--pink:#FF5A8A; --yellow:#FFC91A; --cyan-soft:#DFF3FF;
+--ph-bg:#D8DEE8; --ph-bg2:#C7CFDD; --ph-ink:#5B6B84; --ph-line:#AEB9CC;
+--header-bg:rgba(244,249,255,.92);
+--shadow:0 10px 30px rgba(10,30,74,.08);
+--radius:20px;
+}
+@media (prefers-color-scheme: dark){
+:root{
+--bg:#07122E; --surface:#0D1E42; --surface2:#122A5E;
+--ink:#EFF6FF; --ink2:#A9BCDD; --line:#24365E;
+--sky:#2DB9F2; --sky-deep:#38BDF8; --navy:#EFF6FF; --navy2:#0D1E42;
+--cyan-soft:#122A5E;
+--ph-bg:#2A3A5E; --ph-bg2:#22314F; --ph-ink:#8FA3C4; --ph-line:#3D5178;
+--header-bg:rgba(7,18,46,.92);
+--shadow:0 10px 30px rgba(0,0,0,.35);
+}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto}.ticker-track{animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,[role="button"],select,input,textarea{font:inherit}
+button,select,input:not([type="checkbox"]){min-height:44px}
+.en{font-family:"Archivo",sans-serif;letter-spacing:.02em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+@media(min-width:768px){.wrap{padding:0 32px}}
+
+/* Header */
+header{position:sticky;top:0;z-index:50;background:var(--header-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.header-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px;max-width:1180px;margin:0 auto;padding:0 20px}
+@media(min-width:768px){.header-in{padding:0 32px;height:72px}}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;letter-spacing:.04em}
+.logo-mark{width:42px;height:36px;border-radius:10px;background:var(--sky);color:#fff;display:grid;place-items:center;font-family:"Archivo";font-weight:900;font-size:10px;letter-spacing:.02em;flex:none}
+.logo small{display:block;font-size:10px;letter-spacing:.18em;color:var(--sky-deep);font-weight:700;line-height:1.2}
+.logo b{font-size:15px;line-height:1.2;display:block}
+nav.main{display:none;gap:4px;align-items:center}
+nav.main a{text-decoration:none;font-size:13px;font-weight:700;padding:10px 12px;border-radius:999px;color:var(--ink2)}
+nav.main a:hover{background:var(--surface2);color:var(--ink)}
+nav.main a.cta{background:var(--navy);color:#fff;margin-left:8px;padding:10px 18px}
+@media(prefers-color-scheme:dark){nav.main a.cta{background:var(--sky);color:#07122E}}
+@media(min-width:900px){nav.main{display:flex}}
+.theme-badge{font-size:11px;font-weight:900;letter-spacing:.12em;background:var(--yellow);color:#0A1E4A;padding:5px 10px;border-radius:999px;white-space:nowrap}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:var(--navy);color:#fff}
+@media(prefers-color-scheme:dark){.hero{background:#0A1E4A}}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.22) 1.5px, transparent 1.6px);background-size:22px 22px;opacity:.5;pointer-events:none}
+.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:var(--sky);opacity:.28;filter:blur(2px);pointer-events:none}
+.hero-in{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:44px 20px 0}
+@media(min-width:768px){.hero-in{padding:64px 32px 0}}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:900;letter-spacing:.16em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 12px;border-radius:999px}
+.hero-kicker i{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:block}
+.hero h1{font-size:clamp(38px,7vw,76px);line-height:1.05;margin:20px 0 8px;font-weight:900;letter-spacing:-.01em}
+.hero h1 .en{display:block;font-size:clamp(44px,9vw,104px);font-weight:900;line-height:.95;letter-spacing:-.02em}
+.hero h1 .jp{display:block;font-size:clamp(24px,3.6vw,38px);line-height:1.3;margin-top:14px;font-weight:900}
+@media(max-width:640px){.hero::after{width:240px;height:240px;right:-90px;top:-90px;opacity:.22}}
+.hero h1 .en em{font-style:normal;color:var(--sky)}
+.hero h1 .en .p{color:var(--pink)}.hero h1 .en .y{color:var(--yellow)}
+.hero p.lead{max-width:620px;color:#D6E6FF;font-size:15px;margin:14px 0 0}
+@media(min-width:768px){.hero p.lead{font-size:17px}}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 28px}
+.hero-tags span{font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.35);padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.06)}
+.hero-visual{margin-top:8px}
+/* Gray dummy */
+.ph{max-width:100%;min-width:0;background:linear-gradient(180deg,var(--ph-bg),var(--ph-bg2));border:1.5px dashed var(--ph-line);color:var(--ph-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;padding:16px}
+.ph .ph-icon{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ph-line);display:grid;place-items:center;font-size:18px;background:rgba(255,255,255,.25)}
+.ph>*{max-width:100%;min-width:0}
+.ph b{font-size:13px;letter-spacing:.04em}
+.ph span{font-size:11px;letter-spacing:.06em;opacity:.9}
+.hero .ph{width:100%;border-radius:20px 20px 0 0;border-bottom:none;aspect-ratio:16/8;min-height:220px;background:linear-gradient(180deg,#D8DEE8,#C2CCDC);color:#5B6B84;border-color:#93A3BC}
+@media(min-width:768px){.hero .ph{aspect-ratio:16/6.2}}
+.hero .ph b{font-size:15px}.hero .ph span{font-size:12px}
+.hero-note{font-size:11px;color:#8FA8D8;padding:10px 2px 16px;letter-spacing:.04em}
+
+/* Ticker */
+.ticker{background:var(--sky);color:#fff;overflow:hidden;padding:10px 0;border-top:3px solid var(--yellow)}
+.ticker-track{display:flex;gap:0;width:max-content;animation:tick 28s linear infinite;font-family:"Archivo";font-weight:800;letter-spacing:.14em;font-size:13px;white-space:nowrap}
+.ticker-track span{padding:0 18px}
+.ticker-track span::after{content:"✦";margin-left:36px;color:var(--yellow)}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* Sections */
+section{padding:64px 0}
+@media(min-width:768px){section{padding:88px 0}}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head h2{margin:0;line-height:1}
+.sec-head h2 .en{display:block;font-size:clamp(40px,7vw,72px);font-weight:900;letter-spacing:-.02em;line-height:.95}
+.sec-head h2 .jp{display:block;font-size:14px;font-weight:900;letter-spacing:.22em;margin-top:10px;color:var(--sky-deep)}
+.sec-head p{margin:0;color:var(--ink2);font-size:14px;max-width:420px}
+.rule{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--sky) 0 55%,var(--pink) 55% 78%,var(--yellow) 78% 100%);margin-bottom:28px}
+
+/* News carousel */
+#news{padding-top:52px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filters button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;min-height:40px}
+.filters button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+@media(prefers-color-scheme:dark){.filters button[aria-pressed="true"]{background:var(--sky);color:#07122E;border-color:var(--sky)}}
+.carousel{position:relative}
+.viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 2px 10px}
+.viewport::-webkit-scrollbar{display:none}
+.track{display:flex;gap:16px}
+.news-card{flex:0 0 86%;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+@media(min-width:640px){.news-card{flex-basis:47%}}
+@media(min-width:1024px){.news-card{flex-basis:31.8%}}
+.news-card .ph{aspect-ratio:16/9;border:none;border-bottom:1.5px dashed var(--ph-line);border-radius:0}
+.news-body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.meta{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink2)}
+.badge{font-size:11px;font-weight:900;letter-spacing:.06em;padding:4px 9px;border-radius:999px;color:#fff;background:var(--sky-deep)}
+.badge.interview{background:var(--pink)}.badge.event{background:#E89A00;color:#231a00}.badge.media{background:var(--navy)}
+@media(prefers-color-scheme:dark){.badge.media{background:#7FB6E8;color:#07122E}}
+.news-body h3{margin:0;font-size:16px;line-height:1.55;font-weight:900}
+.news-body p{margin:0;font-size:13px;color:var(--ink2);flex:1}
+.news-body a.more{font-size:13px;font-weight:900;color:var(--sky-deep);text-decoration:none;padding:8px 0 0;display:inline-block}
+.car-nav{display:flex;align-items:center;justify-content:space-between;margin-top:6px;gap:16px}
+.car-btns{display:flex;gap:8px}
+.car-btns button{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-size:18px;cursor:pointer;color:var(--ink);display:grid;place-items:center}
+.car-btns button:hover{background:var(--surface2)}
+.dots{display:flex;gap:7px;flex-wrap:wrap}
+.dots button{width:10px;height:10px;min-height:10px;border-radius:50%;border:none;background:var(--line);padding:0;cursor:pointer}
+.dots button.on{background:var(--sky);width:26px;border-radius:99px}
+.empty{display:none;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:28px;text-align:center;color:var(--ink2);font-size:14px}
+
+/* Business */
+#business{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.biz-list{border-top:2px solid var(--ink)}
+.biz-row{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:24px 4px;border-bottom:1px solid var(--line);align-items:start}
+@media(min-width:768px){.biz-row{grid-template-columns:110px 1fr auto;gap:24px;padding:30px 8px;align-items:center}}
+.biz-num{font-family:"Archivo";font-size:clamp(34px,5vw,56px);font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:1.8px var(--sky-deep)}
+.biz-row h3{margin:0 0 4px;font-size:19px;font-weight:900}
+.biz-row h3 .en{font-size:12px;letter-spacing:.14em;color:var(--sky-deep);display:block;font-weight:800}
+.biz-row p{margin:0;color:var(--ink2);font-size:14px;max-width:640px}
+.biz-tag{font-size:11px;font-weight:900;letter-spacing:.08em;padding:6px 11px;border-radius:999px;background:var(--cyan-soft);color:var(--sky-deep);white-space:nowrap;justify-self:start}
+@media(min-width:768px){.biz-tag{justify-self:end}}
+.biz-tag.future{background:#FFF3C4;color:#7A5B00}
+@media(prefers-color-scheme:dark){.biz-tag.future{background:#4A3A08;color:#FFD94D}}
+
+/* Members */
+.group-label{display:flex;align-items:center;gap:12px;margin:34px 0 18px;font-weight:900;font-size:15px;letter-spacing:.06em}
+.group-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.group-label .dot{width:10px;height:10px;border-radius:3px;background:var(--pink);flex:none}
+.group-label.staff .dot{background:var(--sky)}
+.talent-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:768px){.talent-grid{grid-template-columns:repeat(4,1fr);gap:18px}}
+.talent{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.talent .ph{aspect-ratio:3/3.9;border:none;border-bottom:1.5px dashed var(--ph-line)}
+.talent-body{padding:14px 16px 16px}
+.talent-body .role{font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--sky-deep)}
+.talent-body h3{margin:3px 0 4px;font-size:16px;font-weight:900}
+.talent-body p{margin:0;font-size:12px;color:var(--ink2);line-height:1.6}
+.talent-bar{height:5px}
+.staff-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.staff-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.staff-grid{grid-template-columns:repeat(3,1fr)}}
+.staff{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.staff .ph{width:64px;height:64px;border-radius:12px;flex:none;padding:6px}
+.staff .ph b{font-size:9px}.staff .ph span{display:none}.staff .ph .ph-icon{width:24px;height:24px;font-size:12px}
+.staff h3{margin:0;font-size:14px;font-weight:900}
+.staff p{margin:0;font-size:12px;color:var(--ink2)}
+.staff .role{font-size:11px;font-weight:800;color:var(--sky-deep);letter-spacing:.06em}
+
+/* About / Partners */
+#about{background:var(--navy);color:#fff}
+@media(prefers-color-scheme:dark){#about{background:#0A1E4A}}
+#about .sec-head h2 .jp{color:var(--yellow)} #about .sec-head p{color:#B9CFF2}
+#about .rule{background:linear-gradient(90deg,var(--sky) 0 55%,var(--pink) 55% 78%,var(--yellow) 78% 100%)}
+.about-grid{display:grid;gap:28px}
+@media(min-width:900px){.about-grid{grid-template-columns:1fr 1.2fr;gap:44px}}
+#about .ph{border-radius:var(--radius);aspect-ratio:4/3;background:linear-gradient(180deg,#D8DEE8,#C2CCDC);color:#5B6B84;border-color:#93A3BC}
+dl.spec{margin:0;border-top:1px solid rgba(255,255,255,.25)}
+dl.spec div{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:14px 2px;border-bottom:1px solid rgba(255,255,255,.18);font-size:14px}
+dl.spec dt{font-weight:900;color:#9CC8F2;letter-spacing:.04em}
+dl.spec dd{margin:0;color:#EFF6FF}
+.partner-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:768px){.partner-grid{grid-template-columns:repeat(4,1fr);gap:18px}}
+.partner-grid .ph{aspect-ratio:5/2;border-radius:14px}
+.partner-note{font-size:12px;color:var(--ink2);margin-top:14px}
+
+/* Contact */
+#contact{background:var(--surface2);border-top:1px solid var(--line)}
+.contact-grid{display:grid;gap:28px}
+@media(min-width:900px){.contact-grid{grid-template-columns:.9fr 1.1fr;gap:44px}}
+form{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+@media(min-width:768px){form{padding:28px}}
+label{display:block;font-size:13px;font-weight:900;margin:0 0 6px}
+label.req{color:var(--pink);font-size:11px;margin-left:6px}
+.field{margin-bottom:16px}
+input[type="text"],input[type="email"],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);color:var(--ink);min-height:48px}
+textarea{min-height:130px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
+.submit{width:100%;background:var(--navy);color:#fff;border:none;border-radius:999px;padding:14px;font-weight:900;font-size:15px;cursor:pointer;min-height:52px}
+@media(prefers-color-scheme:dark){.submit{background:var(--sky);color:#07122E}}
+.form-msg{display:none;margin-top:14px;background:var(--cyan-soft);border-radius:12px;padding:14px;font-size:13px}
+.form-msg.show{display:block}
+.form-msg a{font-weight:900;color:var(--sky-deep)}
+.contact-side p{color:var(--ink2);font-size:14px}
+.contact-side .ph{border-radius:var(--radius);aspect-ratio:16/10;margin-top:18px}
+
+footer{background:var(--navy);color:#B9CFF2;padding:36px 0 44px;font-size:12px}
+@media(prefers-color-scheme:dark){footer{background:#050D22}}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer b{color:#fff;font-size:14px}
+footer nav{display:flex;gap:16px;flex-wrap:wrap}
+footer a{text-decoration:none;padding:6px 0}
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-in">
+<a class="logo" href="#top" aria-label="トップへ">
+<span class="logo-mark">LOGO</span>
+<span><small>ENTERTAINMENT COMPANY</small><b>会社名（仮）</b></span>
+</a>
+<span class="theme-badge">BLUE 系</span>
+<nav class="main" aria-label="メインメニュー">
+<a href="#news">お知らせ</a>
+<a href="#business">事業</a>
+<a href="#member">メンバー</a>
+<a href="#about">会社概要</a>
+<a href="#partners">提携先</a>
+<a class="cta" href="#contact">お問い合わせ</a>
+</nav>
+</div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<div class="hero">
+<div class="hero-in">
+<span class="hero-kicker"><i></i>声優 × コスプレ × エンタメ</span>
+<h1>
+<span class="en">VOICE<em>&amp;</em><br>COSPLAY<span class="p">.</span><span class="y">!</span></span>
+<span class="jp">キャッチコピー（仮）</span>
+</h1>
+<p class="lead">声優とコスプレイヤーが集まるエンターテインメント会社のサイト試作です。文章・会社名はすべて仮置きで、ロゴと本物のビジュアルが届いたら差し替える前提の「ガワ」です。</p>
+<div class="hero-tags">
+<span>エンターテインメント</span><span>芸能</span><span>海外進出</span><span>事業提携</span>
+</div>
+<div class="hero-visual">
+<div class="ph" role="img" aria-label="メインビジュアルのダミー枠">
+<span class="ph-icon">▦</span>
+<b>メインビジュアル｜所属メンバー集合</b>
+<span>推奨サイズ 1920 × 1080px ・ 人物ビジュアルを全面に配置</span>
+</div>
+<p class="hero-note">※ 画像はすべてグレーのダミー枠です。本番素材に差し替えてください。</p>
+</div>
+</div>
+</div>
+
+<div class="ticker" aria-hidden="true">
+<div class="ticker-track" id="tickerTrack">
+<span>ENTERTAINMENT</span><span>VOICE ACTOR</span><span>COSPLAY</span><span>GLOBAL</span><span>PARTNERSHIP</span><span>ENTERTAINMENT</span><span>VOICE ACTOR</span><span>COSPLAY</span><span>GLOBAL</span><span>PARTNERSHIP</span>
+</div>
+</div>
+
+<!-- NEWS -->
+<section id="news">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">NEWS</span><span class="jp">お知らせ</span></h2>
+<p>最新のお知らせとインタビュー記事をまとめて掲載します。カテゴリで絞り込めます。</p>
+</div>
+<div class="rule"></div>
+
+<div class="filters" role="group" aria-label="お知らせの絞り込み">
+<button type="button" data-filter="all" aria-pressed="true">すべて</button>
+<button type="button" data-filter="news" aria-pressed="false">お知らせ</button>
+<button type="button" data-filter="interview" aria-pressed="false">インタビュー</button>
+<button type="button" data-filter="event" aria-pressed="false">イベント</button>
+<button type="button" data-filter="media" aria-pressed="false">メディア</button>
+</div>
+
+<div class="carousel">
+<div class="viewport" id="viewport" tabindex="0" aria-label="お知らせ一覧（横スクロール）">
+<div class="track" id="track">
+
+<article class="news-card" data-cat="interview">
+<div class="ph"><span class="ph-icon">▦</span><b>インタビュー写真</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-11-10">2026.11.10</time><span class="badge interview">インタビュー</span></div>
+<h3>インタビュー記事タイトル（仮）｜声優 × コスプレの現場から</h3>
+<p>記事のリード文が入ります（仮）。本文は WordPress 等での運用を想定したダミーテキストです。</p>
+<a class="more" href="#news">記事を読む →</a>
+</div>
+</article>
+
+<article class="news-card" data-cat="news">
+<div class="ph"><span class="ph-icon">▦</span><b>お知らせ画像</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-11-05">2026.11.05</time><span class="badge">お知らせ</span></div>
+<h3>公式サイト試作を公開しました（仮）</h3>
+<p>お知らせ本文の要約が入ります（仮）。詳細が決まり次第、差し替えてください。</p>
+<a class="more" href="#news">詳しく見る →</a>
+</div>
+</article>
+
+<article class="news-card" data-cat="event">
+<div class="ph"><span class="ph-icon">▦</span><b>イベントキービジュアル</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-10-28">2026.10.28</time><span class="badge event">イベント</span></div>
+<h3>出演イベントのお知らせ（仮）</h3>
+<p>イベント名・日時・会場などの要約が入ります（仮）。</p>
+<a class="more" href="#news">詳しく見る →</a>
+</div>
+</article>
+
+<article class="news-card" data-cat="interview">
+<div class="ph"><span class="ph-icon">▦</span><b>インタビュー写真</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-10-20">2026.10.20</time><span class="badge interview">インタビュー</span></div>
+<h3>インタビュー記事タイトル（仮）｜コスプレイヤー対談</h3>
+<p>記事のリード文が入ります（仮）。対談相手・撮影クレジットは本番で差し替えます。</p>
+<a class="more" href="#news">記事を読む →</a>
+</div>
+</article>
+
+<article class="news-card" data-cat="media">
+<div class="ph"><span class="ph-icon">▦</span><b>メディア掲載画像</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-10-12">2026.10.12</time><span class="badge media">メディア</span></div>
+<h3>メディア掲載のお知らせ（仮）</h3>
+<p>掲載媒体名と内容の要約が入ります（仮）。</p>
+<a class="more" href="#news">詳しく見る →</a>
+</div>
+</article>
+
+<article class="news-card" data-cat="news">
+<div class="ph"><span class="ph-icon">▦</span><b>お知らせ画像</b><span>推奨 1200 × 675px</span></div>
+<div class="news-body">
+<div class="meta"><time datetime="2026-10-01">2026.10.01</time><span class="badge">お知らせ</span></div>
+<h3>事業提携に関するお知らせ（仮）</h3>
+<p>提携先と取り組み内容の要約が入ります（仮）。提携先ロゴは下部の提携先欄にも掲載します。</p>
+<a class="more" href="#news">詳しく見る →</a>
+</div>
+</article>
+
+</div>
+</div>
+<p class="empty" id="emptyMsg">このカテゴリの記事はまだありません。</p>
+<div class="car-nav">
+<div class="dots" id="dots" aria-label="カルーセルの位置"></div>
+<div class="car-btns">
+<button type="button" id="prevBtn" aria-label="前のお知らせへ">←</button>
+<button type="button" id="nextBtn" aria-label="次のお知らせへ">→</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- BUSINESS -->
+<section id="business">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">BUSINESS</span><span class="jp">事業一覧</span></h2>
+<p>エンターテインメントを軸に、声優 × コスプレ、海外進出、事業提携まで広げていく想定の5事業です。</p>
+</div>
+<div class="rule"></div>
+<div class="biz-list">
+<div class="biz-row">
+<div class="biz-num">01</div>
+<div><h3><span class="en">ENTERTAINMENT</span>エンターテインメント事業</h3><p>イベント・コンテンツ・ライブ等の企画制作（仮）。事業説明文は確定後に差し替えます。</p></div>
+<span class="biz-tag">主力事業</span>
+</div>
+<div class="biz-row">
+<div class="biz-num">02</div>
+<div><h3><span class="en">VOICE × COSPLAY</span>声優 × コスプレ事業</h3><p>声優とコスプレイヤーを集め、声優自身にコスプレしてもらう企画が中心（仮）。出演・撮影・配信などの見せ方は本番素材で設計します。</p></div>
+<span class="biz-tag">主力事業</span>
+</div>
+<div class="biz-row">
+<div class="biz-num">03</div>
+<div><h3><span class="en">GLOBAL</span>海外進出事業</h3><p>海外イベント出展や現地パートナーとの展開を想定（仮）。対象地域・時期は未定です。</p></div>
+<span class="biz-tag">展開中</span>
+</div>
+<div class="biz-row">
+<div class="biz-num">04</div>
+<div><h3><span class="en">PARTNERSHIP</span>事業提携</h3><p>企業・団体とのタイアップや共同企画の窓口（仮）。提携先は下部の提携先欄に掲載します。</p></div>
+<span class="biz-tag">窓口あり</span>
+</div>
+<div class="biz-row">
+<div class="biz-num">05</div>
+<div><h3><span class="en">MATCHING — FUTURE</span>婚活事業</h3><p>将来的に取り組む想定の事業として仮置きしています。内容・開始時期は未定です。</p></div>
+<span class="biz-tag future">将来事業（仮）</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- MEMBER -->
+<section id="member">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">MEMBER</span><span class="jp">メンバー</span></h2>
+<p>所属メンバーと制作スタッフを、ひとつの「メンバー」セクションにまとめています。</p>
+</div>
+<div class="rule"></div>
+
+<div class="group-label"><span class="dot"></span>所属メンバー</div>
+<div class="talent-grid">
+<article class="talent">
+<div class="talent-bar" style="background:var(--sky)"></div>
+<div class="ph"><span class="ph-icon">◯</span><b>人物写真｜メンバーA</b><span>推奨 600 × 780px ・ 縦長</span></div>
+<div class="talent-body"><span class="role">声優</span><h3>メンバー名（仮）A</h3><p>プロフィール文（仮）。代表作・活動歴は本人の素材が届き次第差し替えます。</p></div>
+</article>
+<article class="talent">
+<div class="talent-bar" style="background:var(--pink)"></div>
+<div class="ph"><span class="ph-icon">◯</span><b>人物写真｜メンバーB</b><span>推奨 600 × 780px ・ 縦長</span></div>
+<div class="talent-body"><span class="role">声優 ／ コスプレイヤー</span><h3>メンバー名（仮）B</h3><p>プロフィール文（仮）。コスプレ写真は衣装ビジュアルで差し替えます。</p></div>
+</article>
+<article class="talent">
+<div class="talent-bar" style="background:var(--yellow)"></div>
+<div class="ph"><span class="ph-icon">◯</span><b>人物写真｜メンバーC</b><span>推奨 600 × 780px ・ 縦長</span></div>
+<div class="talent-body"><span class="role">コスプレイヤー</span><h3>メンバー名（仮）C</h3><p>プロフィール文（仮）。活動ジャンル・SNSリンクは本番で設定します。</p></div>
+</article>
+<article class="talent">
+<div class="talent-bar" style="background:var(--sky-deep)"></div>
+<div class="ph"><span class="ph-icon">◯</span><b>人物写真｜メンバーD</b><span>推奨 600 × 780px ・ 縦長</span></div>
+<div class="talent-body"><span class="role">声優</span><h3>メンバー名（仮）D</h3><p>プロフィール文（仮）。追加メンバーは同じ型で増やせます。</p></div>
+</article>
+</div>
+
+<div class="group-label staff"><span class="dot"></span>制作スタッフ</div>
+<div class="staff-grid">
+<div class="staff"><div class="ph"><span class="ph-icon">◯</span><b>顔写真</b><span>400 × 400px</span></div><div><span class="role">代表 ／ プロデューサー</span><h3>スタッフ名（仮）</h3><p>担当領域の説明（仮）。</p></div></div>
+<div class="staff"><div class="ph"><span class="ph-icon">◯</span><b>顔写真</b><span>400 × 400px</span></div><div><span class="role">ディレクター</span><h3>スタッフ名（仮）</h3><p>担当領域の説明（仮）。</p></div></div>
+<div class="staff"><div class="ph"><span class="ph-icon">◯</span><b>顔写真</b><span>400 × 400px</span></div><div><span class="role">マネージャー</span><h3>スタッフ名（仮）</h3><p>担当領域の説明（仮）。</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">COMPANY</span><span class="jp">会社概要</span></h2>
+<p>会社情報はすべて仮置きです。登記情報が確定したらそのまま差し替えるだけの形にしてあります。</p>
+</div>
+<div class="rule"></div>
+<div class="about-grid">
+<div class="ph" role="img" aria-label="会社イメージ写真のダミー枠"><span class="ph-icon">▦</span><b>会社イメージ写真</b><span>推奨 1200 × 900px ・ オフィス／イベント風景など</span></div>
+<dl class="spec">
+<div><dt>会社名</dt><dd>会社名（仮）</dd></div>
+<div><dt>設立</dt><dd>設立年月（仮）</dd></div>
+<div><dt>所在地</dt><dd>所在地（仮）</dd></div>
+<div><dt>代表者</dt><dd>代表者名（仮）</dd></div>
+<div><dt>事業内容</dt><dd>エンターテインメント事業／声優 × コスプレ事業／海外進出／事業提携 ほか（仮）</dd></div>
+<div><dt>お問い合わせ</dt><dd>下部のお問い合わせフォームより（仮）</dd></div>
+</dl>
+</div>
+</div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">PARTNERS</span><span class="jp">提携先</span></h2>
+<p>提携先が決まったら、ロゴをこの枠に差し込むだけです。</p>
+</div>
+<div class="rule"></div>
+<div class="partner-grid">
+<div class="ph"><span class="ph-icon">▦</span><b>提携先ロゴ 01</b><span>推奨 800 × 320px ・ 透過PNG可</span></div>
+<div class="ph"><span class="ph-icon">▦</span><b>提携先ロゴ 02</b><span>推奨 800 × 320px ・ 透過PNG可</span></div>
+<div class="ph"><span class="ph-icon">▦</span><b>提携先ロゴ 03</b><span>推奨 800 × 320px ・ 透過PNG可</span></div>
+<div class="ph"><span class="ph-icon">▦</span><b>提携先ロゴ 04</b><span>推奨 800 × 320px ・ 透過PNG可</span></div>
+</div>
+<p class="partner-note">※ 提携先名・リンク先は確定後に設定します。ロゴの使用許諾があるものだけを掲載してください。</p>
+</div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+<div class="wrap">
+<div class="sec-head">
+<h2><span class="en">CONTACT</span><span class="jp">お問い合わせ</span></h2>
+<p>出演・提携・取材などのご相談はこちらから。</p>
+</div>
+<div class="rule"></div>
+<div class="contact-grid">
+<div class="contact-side">
+<p>お問い合わせ種別を選んで送信すると、入力内容でメール下書きを作成します（試作のため、送信先アドレスは仮です）。本番では WordPress のフォーム等に接続する想定です。</p>
+<div class="ph"><span class="ph-icon">▦</span><b>お問い合わせイメージ</b><span>推奨 1200 × 750px</span></div>
+</div>
+<form id="contactForm" novalidate>
+<div class="field">
+<label for="f-name">お名前 <span class="req">必須</span></label>
+<input type="text" id="f-name" name="name" autocomplete="name" placeholder="山田 太郎" required>
+</div>
+<div class="field">
+<label for="f-email">メールアドレス <span class="req">必須</span></label>
+<input type="email" id="f-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+</div>
+<div class="field">
+<label for="f-type">お問い合わせ種別</label>
+<select id="f-type" name="type">
+<option>出演・キャスティングについて</option>
+<option>事業提携について</option>
+<option>海外展開について</option>
+<option>取材・メディアについて</option>
+<option>その他</option>
+</select>
+</div>
+<div class="field">
+<label for="f-msg">内容 <span class="req">必須</span></label>
+<textarea id="f-msg" name="message" placeholder="お問い合わせ内容をご記入ください" required></textarea>
+</div>
+<button class="submit" type="submit">入力内容でメールを作成する</button>
+<div class="form-msg" id="formMsg" role="status"></div>
+</form>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer>
+<div class="wrap">
+<div><b>会社名（仮）</b><br>© 2026 Company Name (TBD). Site prototype — BLUE.</div>
+<nav aria-label="フッターメニュー">
+<a href="#news">お知らせ</a><a href="#business">事業</a><a href="#member">メンバー</a><a href="#about">会社概要</a><a href="#contact">お問い合わせ</a>
+</nav>
+</div>
+</footer>
+
+<script>
+(function(){
+var viewport = document.getElementById('viewport');
+var track = document.getElementById('track');
+var cards = Array.prototype.slice.call(track.querySelectorAll('.news-card'));
+var dotsBox = document.getElementById('dots');
+var emptyMsg = document.getElementById('emptyMsg');
+var filterBtns = Array.prototype.slice.call(document.querySelectorAll('.filters button'));
+var currentFilter = 'all';
+
+function visibleCards(){
+return cards.filter(function(c){ return c.style.display!== 'none';});
+}
+function buildDots(){
+dotsBox.innerHTML = '';
+visibleCards().forEach(function(_, i){
+var b = document.createElement('button');
+b.type = 'button';
+b.setAttribute('aria-label', (i+1) + '件目のお知らせへ移動');
+if(i===0) b.className = 'on';
+b.addEventListener('click', function(){ scrollToIndex(i);});
+dotsBox.appendChild(b);
+});
+}
+function cardStep(){
+var v = visibleCards();
+if(!v.length) return 320;
+var w = v[0].getBoundingClientRect().width + 16;
+return w;
+}
+function scrollToIndex(i){
+viewport.scrollTo({left: i * cardStep(), behavior:'smooth'});
+}
+function currentIndex(){
+var step = cardStep();
+if(!step) return 0;
+return Math.round(viewport.scrollLeft / step);
+}
+function updateDots(){
+var idx = currentIndex();
+Array.prototype.forEach.call(dotsBox.children, function(d, i){
+d.classList.toggle('on', i === idx);
+});
+}
+viewport.addEventListener('scroll', function(){ window.requestAnimationFrame(updateDots);}, {passive:true});
+
+document.getElementById('prevBtn').addEventListener('click', function(){
+viewport.scrollBy({left: -cardStep(), behavior:'smooth'});
+});
+document.getElementById('nextBtn').addEventListener('click', function(){
+viewport.scrollBy({left: cardStep(), behavior:'smooth'});
+});
+
+filterBtns.forEach(function(btn){
+btn.addEventListener('click', function(){
+currentFilter = btn.getAttribute('data-filter');
+filterBtns.forEach(function(b){ b.setAttribute('aria-pressed', b===btn? 'true':'false');});
+var n = 0;
+cards.forEach(function(c){
+var show = currentFilter==='all' || c.getAttribute('data-cat')===currentFilter;
+c.style.display = show? '': 'none';
+if(show) n++;
+});
+emptyMsg.style.display = n===0? 'block': 'none';
+viewport.style.display = n===0? 'none': '';
+viewport.scrollTo({left:0});
+buildDots(); updateDots();
+});
+});
+buildDots();
+
+// Contact: build a mail draft instead of faking a server send
+var form = document.getElementById('contactForm');
+var msg = document.getElementById('formMsg');
+form.addEventListener('submit', function(e){
+e.preventDefault();
+var name = document.getElementById('f-name').value.trim();
+var email = document.getElementById('f-email').value.trim();
+var type = document.getElementById('f-type').value;
+var body = document.getElementById('f-msg').value.trim();
+if(!name ||!email ||!body){
+msg.className = 'form-msg show';
+msg.textContent = '必須項目（お名前／メールアドレス／内容）を入力してください。';
+return;
+}
+var subject = encodeURIComponent('' + type);
+var text = encodeURIComponent('お名前: ' + name + '\nメール: ' + email + '\n種別: ' + type + '\n\n' + body);
+var href = 'mailto:contact@example.com?subject=' + subject + '&body=' + text;
+msg.className = 'form-msg show';
+msg.innerHTML = '入力内容を確認しました。<a href="' + href + '">メールアプリで下書きを開く →</a><br>※ 試作のため送信先は仮アドレスです。本番の宛先が決まったら差し替えます。';
+});
+})();
+</script>
+</body>
+</html>
