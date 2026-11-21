@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/member.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="メンバー詳細（試作）">
+<meta property="og:description" content="メンバー詳細ページの試作">
+<meta property="og:url" content="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/member.html">
+<meta name="twitter:card" content="summary">
+
+<title>メンバー A｜メンバー詳細（試作）</title>
+<style>
+:root{--green-950:#0a2e23;--green-900:#0c3b2e;--purple-950:#211336;--purple-700:#4c2a85;--pink:#c96f8d;--paper:#f7f6f2;--ink:#17211c;--ink-soft:#4a5750;--line:#d9d7cd;--card:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.8}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+header{padding:16px 0;border-bottom:1px solid var(--line)}header a{text-decoration:none;font-weight:800;color:var(--purple-700)}
+.hero{background:var(--green-950);color:#f2f5f1;padding:48px 0}
+.hero .role{font-size:12px;letter-spacing:.22em;color:#e9c3cf;font-weight:800}
+.hero h1{font-size:clamp(32px,6vw,52px);margin:8px 0}
+.frame{background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.045) 14px 15px),linear-gradient(160deg,#c9c9c7,#bdbdbb);border:1px solid rgba(0,0,0,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#555;padding:16px;border-radius:14px;aspect-ratio:4/5}
+.frame.wide{aspect-ratio:16/9}
+section{padding:44px 0 8px}h2{font-family:Georgia,serif;font-size:28px;margin:0 0 6px}
+.jp{font-size:12px;letter-spacing:.2em;color:var(--ink-soft);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
+.two{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px}@media(max-width:800px){.two{grid-template-columns:1fr}}
+dl{border-top:1px solid var(--line)}dl div{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:12px 2px;border-bottom:1px solid var(--line)}dt{font-size:12px;font-weight:800;color:var(--ink-soft)}dd{margin:0}
+.card{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card);margin:14px 0}
+.btn{display:inline-block;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:800;margin-right:8px}
+footer{padding:30px 0;color:var(--ink-soft);font-size:12px}
+.video-facade{position:relative;cursor:pointer}.video-facade .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+</style></head><body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+<header><div class="wrap"><a href="./index.html">← メンバー一覧へ戻る</a></div></header>
+<div class="hero"><div class="wrap">
+<p class="role">VOICE ACTOR</p><h1>メンバー A</h1>
+<p style="color:#dde8e1;max-width:620px">アニメ・ゲーム出演／ナレーション。プロフィール文は確定後に掲載します。</p>
+</div></div>
+<main class="wrap">
+<section><p class="jp">プロフィール</p><h2>PROFILE</h2>
+<div class="two"><div class="frame" role="img" aria-label="ポートレートのダミー枠">ポートレート<br>推奨 800 × 1000</div>
+<dl>
+<div><dt>活動</dt><dd>アニメ・ゲーム出演／ナレーション</dd></div>
+<div><dt>出演歴</dt><dd>（確定後に掲載）</dd></div>
+<div><dt>SNS</dt><dd>（確定後に掲載）</dd></div>
+</dl></div></section>
+
+<section><p class="jp">写真</p><h2>GALLERY</h2>
+<div class="grid">
+<div class="frame" role="img" aria-label="活動写真のダミー枠">活動写真 1</div>
+<div class="frame" role="img" aria-label="活動写真のダミー枠">活動写真 2</div>
+<div class="frame" role="img" aria-label="衣装写真のダミー枠">衣装写真</div>
+</div></section>
+
+<section><p class="jp">動画</p><h2>VIDEO</h2>
+<div class="card">
+<div class="frame wide video-facade" id="videoFacade" role="button" tabindex="0" aria-label="動画を再生する">動画サムネイル（クリックで読み込みます）<span class="play">▶</span></div>
+<p style="font-size:13px;color:var(--ink-soft)">動画はここでだけ、クリックされたときに読み込みます。一覧ページでは読み込みません。YouTube／MP4のどちらにするかは素材が来てから決めます。</p>
+</div></section>
+
+<section><p class="jp">関連</p><h2>RELATED</h2>
+<div class="card"><b>書籍</b><p style="margin:6px 0">書籍を出しているメンバーの場合に表示します。</p>
+<a class="btn" href="#" onclick="return false" style="background:#ff9900;color:#111">Amazonで見る</a>
+<a class="btn" href="#" onclick="return false" style="background:#bf0000;color:#fff">楽天で見る</a></div>
+<div class="card"><b>イベント</b><p style="margin:6px 0">出演イベントがある場合に、日時・会場と同じ形式で表示します。</p>
+<a class="btn" href="#" onclick="return false" style="background:var(--green-900);color:#fff">詳細・チケット</a></div>
+</section>
+</main>
+<footer><div class="wrap">メンバー詳細ページの型（試作）— 写真・文章はダミーです</div></footer>
+<script>document.getElementById('videoFacade').addEventListener('click',function(){this.innerHTML='<span style="color:#333">ここに動画プレイヤーが読み込まれます（試作のため未接続）</span>'})</script>
+</body></html>
