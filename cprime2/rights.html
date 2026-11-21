@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>所属メンバーの肖像・権利について | 会社サイト試作 C''</title>
+<meta name="robots" content="index,follow,noimageai">
+<meta name="description" content="所属メンバーの肖像・音声・氏名等の権利保護に関する当社の方針です。生成AIへの学習・生成利用、無断転載・加工を禁止します。">
+<link rel="canonical" href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/rights.html">
+<meta property="og:title" content="所属メンバーの肖像・権利について">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/rights.html">
+<style>
+:root{--green-950:#0a2e23;--green-900:#0c3b2e;--purple-700:#4c2a85;--pink:#c96f8d;--paper:#f7f6f2;--ink:#17211c;--ink-soft:#4a5750;--line:#d9d7cd}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;line-height:1.9}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header{padding:22px 0;border-bottom:1px solid var(--line)}header a{color:var(--green-900);text-decoration:none;font-weight:700;letter-spacing:.1em;font-size:14px}
+main{padding:44px 0 64px}
+h1{font-size:24px;line-height:1.5;margin:0 0 8px}
+.date{color:var(--ink-soft);font-size:13px;margin-bottom:28px}
+h2{font-size:17px;margin:36px 0 10px;padding-left:12px;border-left:4px solid var(--purple-700)}
+p,li{font-size:15px}
+ul{padding-left:22px}
+.note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:14px}
+footer{border-top:1px solid var(--line);padding:22px 0 30px;font-size:12.5px;color:var(--ink-soft)}
+footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+footer a{color:var(--green-900)}
+</style>
+</head>
+<body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+<header><div class="wrap"><a href="./">ATELIER&nbsp;VERDE</a></div></header>
+<main><div class="wrap">
+<h1>所属メンバーの肖像・権利について</h1>
+<p class="date">（試作ページ：会社名・窓口は本番時に差し替えます）</p>
+<p>当社は、所属メンバー（声優・タレント・クリエイター）が安心して活動に専念できる環境を守るため、肖像、音声、氏名および公式コンテンツの取り扱いについて、以下の方針を定めます。皆さまのご理解とご協力をお願いいたします。</p>
+
+<h2>1. 生成AIへの利用について</h2>
+<p>所属メンバーの写真・動画・音声・氏名等を、生成AIに読み込ませ、学習・加工・生成等に利用する行為は禁止します。特に、以下の行為は固くお断りします。</p>
+<ul>
+<li>所属メンバーの容姿や声を再現した画像・動画・音声等を生成する行為</li>
+<li>本人の意図や人格、尊厳を損なうコンテンツを生成・公開する行為</li>
+<li>生成したコンテンツをSNS等へ投稿、公開、配布、転載する行為</li>
+</ul>
+
+<h2>2. 公式コンテンツの取り扱いについて</h2>
+<p>当社公式ウェブサイト、公式SNS、動画配信サービス等で公開している写真・動画・音声・文章その他のコンテンツには、著作権、肖像権、パブリシティ権その他の権利が存在します。当社の許諾なく、複製、加工、改変、転載、配布、販売等を行うことは禁止します。</p>
+
+<h2>3. なりすまし・誹謗中傷について</h2>
+<p>所属メンバー本人や当社関係者を装う行為、事実無根の情報の流布、誹謗中傷、プライバシーを侵害する行為は固くお断りします。</p>
+
+<h2>4. 違反を確認した場合の対応</h2>
+<p>上記に違反する行為を確認した場合、投稿の削除要請、発信者情報開示請求、民事上の損害賠償請求および刑事告訴を含めた法的措置を講じることがあります。</p>
+
+<div class="note">権利侵害に関するご連絡は、お問い合わせフォームよりお願いいたします。ファンの皆さまによる応援（公式コンテンツへのリンクや、公式の共有機能を使った紹介）は、これまでどおり歓迎いたします。</div>
+</div></main>
+<footer><div class="wrap"><span>会社サイト試作 C'' — 権利保護方針（試作）</span><span><a href="./">トップへ戻る</a></span></div></footer>
+</body>
+</html>
