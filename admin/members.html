@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>メンバー編集（1人ごとの専用ページ）｜会社サイト更新</title>
+<style>
+:root{--green:#0c3b2e;--purple:#4c2a85;--line:#d9d7cd;--bg:#f4f3ef;--card:#fff;--ink:#17211c}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,"Hiragino Sans",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--green);color:#fff;padding:14px 18px}header h1{font-size:18px;margin:0}header p{margin:4px 0 0;font-size:12px;color:#cfe0d8}header a{color:#ffd9e4}
+main{max-width:1380px;margin:0 auto;padding:16px;display:grid;grid-template-columns:250px 1fr 400px;gap:14px;align-items:start}
+@media(max-width:1100px){main{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+button{border:1px solid #bdbab0;background:#fff;border-radius:999px;padding:7px 13px;cursor:pointer;font-weight:700}
+button.primary{background:var(--green);border-color:var(--green);color:#fff}button.small{padding:4px 10px;font-size:12px}button.danger{border-color:#c66;color:#a33}
+input,textarea,select{width:100%;padding:9px;border:1px solid #c9c7bd;border-radius:9px;background:#fff;font:inherit}
+label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
+.note{font-size:12px;color:#666;line-height:1.6}
+.mi{width:100%;text-align:left;margin-top:8px;border-radius:10px;padding:9px 11px}
+.mi.on{border-color:var(--purple);background:#f3eefc}
+.frame{background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.05) 14px 15px),linear-gradient(160deg,#cfcfcd,#bdbdbb);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#555;aspect-ratio:4/5;text-align:center;padding:10px}
+#toTop{position:fixed;right:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;border:1px solid #0c3b2e;background:#0c3b2e;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;cursor:pointer}
+.pv-hero{background:var(--green);color:#fff;border-radius:12px;padding:18px}.pv-sec{padding:14px 0 4px}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gal img{width:100%;border-radius:8px}
+</style><meta name="robots" content="noindex,nofollow,noimageai">
+</head><body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+<header><h1>メンバー編集｜1人ごとの専用ページ</h1>
+<p>メンバーごとに、プロフィール・写真・動画・SNSを持つ詳細ページを編集します。一覧のカードとは別に、この内容が詳細ページになります。保存はブラウザの中だけです（Museは経由しません）。</p>
+<p><a href="./index.html">← ページ編集</a>　｜　<a href="./articles.html">お知らせ・インタビュー記事の編集 →</a></p></header>
+<details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
+<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">GitHub接続（テスト環境）― 読み込み・保存</summary>
+<div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
+<label>リポジトリの持ち主 <input id="ghOwner" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>リポジトリ名 <input id="ghRepo" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>ブランチ <input id="ghBranch" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>保存先ファイル（このエディタ用） <input id="ghPath" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>アクセストークン（fine-grained PAT） <input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button id="ghTest" type="button">接続テスト</button>
+<button id="ghLoad" type="button">GitHubから読み込む</button>
+<button id="ghSave" type="button" style="background:#0c3b2e;color:#fff;border-color:#0c3b2e">GitHubへ保存する</button>
+</div>
+<div id="ghStatus" style="font-size:12.5px;color:#4a5750">未接続です。設定を入れて「接続テスト」を押してください。</div>
+<p style="font-size:12px;color:#777;margin:0">トークンはこのブラウザの中（localStorage）にだけ保存されます。チャットやMuse側には送られません。接続先は公開リポジトリなので、保存したデータは誰でも見られます。テスト中はダミーデータだけを保存してください。読み込み・保存が失敗しても、このブラウザ内のデータとJSON書き出しは今までどおり使えます。</p>
+</div>
+</details>
+
+<main>
+<section class="panel"><button class="primary" id="newBtn" style="width:100%">＋ 新規メンバー</button>
+<div id="list"></div>
+<div style="margin-top:14px;display:grid;gap:8px"><button id="exportJson">JSONで書き出す</button><button id="exportHtml">詳細ページHTMLを書き出す</button></div>
+<p class="note">詳細ページのURLは …/members/＜パーマリンク＞/ になります。</p></section>
+<section class="panel" id="editor"></section>
+<section class="panel"><h2 style="margin:0 0 8px;font-size:15px">詳細ページプレビュー</h2><div id="preview"></div></section>
+</main>
+<button id="toTop" title="上に戻る" aria-label="上に戻る">△</button>
+<script>
+const KEY='companySiteMembersV1';
+const memStore={};function safeGet(k){try{return localStorage.getItem(k)}catch(e){return memStore[k]||null}}let saveFailed=false;function safeSet(k,v){try{localStorage.setItem(k,v);saveFailed=false;return true}catch(e){memStore[k]=v;if(!saveFailed){saveFailed=true;setTimeout(()=>alert('保存容量を超えたため、この端末に保存できていません。JSON書き出しでバックアップを取り、不要な画像・動画を減らしてください。'),50)}return false}}
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const safeUrl=u=>{u=String(u||'').replace(/[\u0000-\u0020]+/g,'');if(!u)return '';if(/^(https?:|mailto:|tel:)/i.test(u))return u;if(u[0]==='#'||u.startsWith('/')||u.startsWith('./')||u.startsWith('../'))return u;if(!/^[a-z][a-z0-9+.-]*:/i.test(u))return u;return ''};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const sanitize=s=>String(s||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+function readImageFile(file,maxW){return new Promise((res,rej)=>{const img=new Image();const url=URL.createObjectURL(file);img.onload=()=>{const scale=Math.min(1,maxW/img.naturalWidth);const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);let out=cv.toDataURL('image/webp',0.85);if(!out.startsWith('data:image/webp'))out=cv.toDataURL('image/jpeg',0.85);res(out)};img.onerror=rej;img.src=url})}
+function readRawFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+const blank=()=>({id:uid(),status:'draft',name:'',role:'VOICE ACTOR',slug:'',catch:'',profile:'',works:'',portrait:'',gallery:[],videoUrl:'',videoData:'',sns:[{name:'X',url:''},{name:'Instagram',url:''},{name:'YouTube',url:''},{name:'TikTok',url:''}]});
+function defaults(){return [{...blank(),id:uid(),status:'published',name:'メンバー A',role:'VOICE ACTOR',slug:'member-a',catch:'アニメ・ゲーム出演／ナレーション',profile:'プロフィール文は確定後に掲載します。',works:'出演作A\n出演作B'}]}
+let members;try{members=JSON.parse(safeGet(KEY))||defaults()}catch(e){members=defaults()}
+members.forEach(m=>{if(!Array.isArray(m.sns)){m.sns=[{name:'X',url:m.x||''},{name:'Instagram',url:m.instagram||''},{name:'YouTube',url:m.youtube||''},{name:'TikTok',url:''}]}delete m.x;delete m.instagram;delete m.youtube;if(!Array.isArray(m.gallery))m.gallery=[]});
+let cur=members[0]?.id;
+const get=()=>members.find(m=>m.id===cur);
+function save(){safeSet(KEY,JSON.stringify(members));renderList();renderPreview()}
+function memberUrl(m){return 'https://ymizuno401-arch.github.io/company-site-prototype/members/'+(m.slug||sanitize(m.name)||m.id)+'/'}
+function renderList(){const box=document.getElementById('list');box.innerHTML='';[...members].forEach(m=>{const b=document.createElement('button');b.className='mi'+(m.id===cur?' on':'');b.innerHTML=`<b>${esc(m.name||'（名前未設定）')}</b><br><span style="font-size:11px;color:#666">${esc(m.role)}｜${m.status==='published'?'公開':'下書き'}</span>`;b.onclick=()=>{cur=m.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.appendChild(b)})}
+function renderEditor(){const ed=document.getElementById('editor');const m=get();if(!m){ed.innerHTML='<p class="note">メンバーがいません</p>';return}
+ ed.innerHTML=`
+ <h2 style="margin:0;font-size:17px">メンバーを編集</h2>
+ <label>名前</label><input data-k="name" value="${esc(m.name)}" placeholder="メンバー名">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>肩書き（英字）</label><input data-k="role" value="${esc(m.role)}" placeholder="VOICE ACTOR / COSPLAYER"></div>
+ <div><label>状態</label><select data-k="status"><option value="draft" ${m.status==='draft'?'selected':''}>下書き</option><option value="published" ${m.status==='published'?'selected':''}>公開</option></select></div></div>
+ <label>パーマリンク（英小文字・数字・ハイフン）</label><input data-k="slug" value="${esc(m.slug)}" placeholder="member-a">
+ <p class="note">詳細ページURL：${esc(memberUrl(m))}</p>
+ <label>キャッチコピー（一覧と詳細の冒頭に出ます）</label><input data-k="catch" value="${esc(m.catch)}">
+ <label>ポートレート（メイン写真）</label>
+ ${m.portrait?`<img src="${esc(m.portrait)}" style="max-width:180px;border-radius:10px">`:'<div class="frame" style="max-width:180px">ポートレート<br>推奨 800 × 1000</div>'}
+ <div style="margin-top:8px;display:flex;gap:8px"><input type="file" id="portFile" accept="image/*" style="display:none"><button class="small primary" id="portUp">写真をアップロード</button>${m.portrait?'<button class="small danger" id="portDel">外す</button>':''}</div>
+ <label>プロフィール文</label><textarea data-k="profile" rows="4">${esc(m.profile)}</textarea>
+ <label>出演歴・活動歴（1行に1つ）</label><textarea data-k="works" rows="4">${esc(m.works)}</textarea>
+ <label>写真ギャラリー</label><div id="gal"></div>
+ <div style="margin-top:8px"><input type="file" id="galFile" accept="image/*" style="display:none"><button class="small primary" id="galUp">＋ 写真を追加</button></div>
+ <label>動画（YouTubeのURL）</label><input data-k="videoUrl" value="${esc(m.videoUrl)}" placeholder="https://www.youtube.com/watch?v=...">
+ <label>または動画ファイル（MP4／WebM・2MBまで）</label>
+ <div style="display:flex;gap:8px;align-items:center"><input type="file" id="vidFile" accept="video/mp4,video/webm" style="display:none"><button class="small" id="vidUp">動画をアップロード</button>${m.videoData?'<span class="note">アップロード済み</span><button class="small danger" id="vidDel">外す</button>':''}</div>
+ <label>SNS・外部サイトのリンク（追加できます）</label><div id="snsBox"></div>
+ <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="small" data-addsns="X">＋ X</button><button class="small" data-addsns="Instagram">＋ Instagram</button><button class="small" data-addsns="YouTube">＋ YouTube</button><button class="small" data-addsns="TikTok">＋ TikTok</button><button class="small" data-addsns="">＋ 自由に追加（海外サイトなど）</button></div>
+ <p class="note">最初から X／Instagram／YouTube／TikTok が入っています。海外の配信サイトや本人のサイトなどは「自由に追加」で、名前とURLの組をいくつでも足せます。</p>
+ <div style="display:flex;gap:8px;margin-top:16px"><button id="dupBtn">複製</button><button id="delBtn" class="danger">このメンバーを削除</button></div>`;
+ ed.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',e=>{let v=e.target.value;if(e.target.dataset.k==='slug')v=sanitize(v);m[e.target.dataset.k]=v;save()}));
+ const pf=ed.querySelector('#portFile');ed.querySelector('#portUp').addEventListener('click',()=>pf.click());pf.addEventListener('change',async()=>{const f=pf.files[0];if(!f)return;m.portrait=await readImageFile(f,1000);save();renderEditor()});
+ const pd=ed.querySelector('#portDel');if(pd)pd.addEventListener('click',()=>{m.portrait='';save();renderEditor()});
+ const gal=ed.querySelector('#gal');(m.gallery||[]).forEach((g,gi)=>{const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:center;margin-top:8px';row.innerHTML=`<img src="${esc(g.src)}" style="width:64px;border-radius:6px"><input value="${esc(g.caption||'')}" placeholder="キャプション" style="flex:1"><button class="small" data-g="up">↑</button><button class="small" data-g="down">↓</button><button class="small danger" data-g="del">削除</button>`;row.querySelector('input').addEventListener('input',e=>{g.caption=e.target.value;save()});row.querySelectorAll('[data-g]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.g;if(a==='del')m.gallery.splice(gi,1);if(a==='up'&&gi>0)[m.gallery[gi-1],m.gallery[gi]]=[m.gallery[gi],m.gallery[gi-1]];if(a==='down'&&gi<m.gallery.length-1)[m.gallery[gi+1],m.gallery[gi]]=[m.gallery[gi],m.gallery[gi+1]];save();renderEditor()}));gal.appendChild(row)});
+ const gf=ed.querySelector('#galFile');ed.querySelector('#galUp').addEventListener('click',()=>gf.click());gf.addEventListener('change',async()=>{const f=gf.files[0];if(!f)return;const src=await readImageFile(f,1200);m.gallery.push({src,caption:''});save();renderEditor()});
+ const vf=ed.querySelector('#vidFile');ed.querySelector('#vidUp').addEventListener('click',()=>vf.click());vf.addEventListener('change',async()=>{const f=vf.files[0];if(!f)return;if(f.size>2*1024*1024){alert('2MBを超えています。ブラウザ保存の上限のため、大きい動画はYouTubeのURLを使ってください。');return}m.videoData=await readRawFile(f);save();renderEditor()});
+ const vd=ed.querySelector('#vidDel');if(vd)vd.addEventListener('click',()=>{m.videoData='';save();renderEditor()});
+ const snsBox=ed.querySelector('#snsBox');(m.sns||[]).forEach((s,si)=>{const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:130px 1fr auto;gap:8px;margin-top:8px';row.innerHTML=`<input value="${esc(s.name)}" placeholder="名前（例：TikTok）"><input value="${esc(s.url)}" placeholder="URL"><button class="small danger">削除</button>`;const [ni,ui]=row.querySelectorAll('input');ni.addEventListener('input',e=>{s.name=e.target.value;save()});ui.addEventListener('input',e=>{s.url=e.target.value;save()});row.querySelector('button').addEventListener('click',()=>{m.sns.splice(si,1);save();renderEditor()});snsBox.appendChild(row)});
+ ed.querySelectorAll('[data-addsns]').forEach(b=>b.addEventListener('click',()=>{m.sns.push({name:b.dataset.addsns,url:''});save();renderEditor()}));
+ ed.querySelector('#dupBtn').addEventListener('click',()=>{const c={...m,sns:(m.sns||[]).map(s=>({...s})),gallery:(m.gallery||[]).map(g=>({...g})),id:uid(),name:m.name+'（コピー）',status:'draft'};members.unshift(c);cur=c.id;save();renderEditor()});
+ ed.querySelector('#delBtn').addEventListener('click',()=>{if(confirm('このメンバーを削除しますか？')){members=members.filter(x=>x.id!==m.id);cur=members[0]?.id;save();renderEditor()}});
+}
+function ytId(u){const mm=String(u||'').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);return mm?mm[1]:''}
+function renderPreview(){const pv=document.getElementById('preview');const m=get();if(!m){pv.innerHTML='';return}
+ const yid=ytId(m.videoUrl);
+ pv.innerHTML=`<div class="pv-hero"><div style="font-size:11px;letter-spacing:.22em">${esc(m.role)}</div><h2 style="margin:6px 0">${esc(m.name||'（名前未設定）')}</h2><p style="margin:0;color:#dde8e1">${esc(m.catch)}</p></div>
+ <div class="pv-sec"><b>PROFILE</b><div style="display:grid;grid-template-columns:130px 1fr;gap:12px;margin-top:8px">${m.portrait?`<img src="${esc(m.portrait)}" style="width:130px;border-radius:10px">`:'<div class="frame">写真</div>'}<div><p style="margin:0">${esc(m.profile)}</p>${m.works?`<p style="margin:8px 0 0"><b>出演歴</b><br>${esc(m.works).replace(/\n/g,'<br>')}</p>`:''}</div></div></div>
+ ${(m.gallery||[]).length?`<div class="pv-sec"><b>GALLERY</b><div class="gal" style="margin-top:8px">${m.gallery.map(g=>`<figure style="margin:0"><img src="${esc(g.src)}"><figcaption style="font-size:11px;color:#666">${esc(g.caption||'')}</figcaption></figure>`).join('')}</div></div>`:''}
+ ${(yid||m.videoData)?`<div class="pv-sec"><b>VIDEO</b>${yid?`<a href="https://www.youtube.com/watch?v=${yid}" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/${yid}/hqdefault.jpg" style="width:100%;border-radius:10px;margin-top:8px"></a><p class="note">クリックでYouTubeを開きます</p>`:`<video src="${esc(m.videoData)}" controls preload="metadata" style="width:100%;border-radius:10px;margin-top:8px"></video>`}</div>`:''}
+ <p class="note">SNS・外部：${(m.sns||[]).filter(s=>s.url).map(s=>esc(s.name)).join(' / ')||'未設定'}<br>URL：${esc(memberUrl(m))}</p>`;
+}
+function detailHtml(m){return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(m.name)+'｜メンバー</title></head><body style="font-family:sans-serif;max-width:900px;margin:0 auto;padding:24px 16px;line-height:1.9"><p><a href="../">← メンバー一覧</a></p><p style="letter-spacing:.2em;font-size:12px">'+esc(m.role)+'</p><h1>'+esc(m.name)+'</h1><p>'+esc(m.catch)+'</p>'+(m.portrait?'<img src="'+esc(m.portrait)+'" style="max-width:300px;border-radius:12px">':'')+'<h2>プロフィール</h2><p>'+esc(m.profile).replace(/\n/g,'<br>')+'</p><h2>出演歴</h2><p>'+esc(m.works).replace(/\n/g,'<br>')+'</p>'+((m.gallery||[]).length?'<h2>ギャラリー</h2>'+m.gallery.map(g=>'<figure><img src="'+esc(g.src)+'" style="max-width:100%"><figcaption>'+esc(g.caption||'')+'</figcaption></figure>').join(''):'')+((m.sns||[]).filter(s=>safeUrl(s.url)).length?'<h2>SNS・外部サイト</h2><ul>'+(m.sns||[]).filter(s=>safeUrl(s.url)).map(s=>'<li><a href="'+esc(safeUrl(s.url))+'" target="_blank" rel="noopener">'+esc(s.name)+'</a></li>').join('')+'</ul>':'')+'</body></html>'}
+function download(n,t,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type}));a.download=n;a.click()}
+document.getElementById('newBtn').onclick=()=>{const m=blank();members.unshift(m);cur=m.id;save();renderEditor();document.getElementById('editor').scrollIntoView({behavior:'smooth'})};
+document.getElementById('exportJson').onclick=()=>download('members.json',JSON.stringify(members,null,2),'application/json');
+document.getElementById('exportHtml').onclick=()=>{const m=get();if(m)download('member-'+(m.slug||m.id)+'.html',detailHtml(m),'text/html')};
+const tt=document.getElementById('toTop');window.addEventListener('scroll',()=>{tt.style.display=window.scrollY>300?'block':'none'},{passive:true});tt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+renderList();renderEditor();renderPreview();
+</script>
+
+<script>
+window.__GHCFG = {id:'members',key:'companySiteMembersV1',path:'data/members.json',label:'メンバー編集',validate:function(d){return Array.isArray(d)},getData:function(){return members}};
+(function(){
+var CFG=window.__GHCFG, GHK='companySiteGitHubV1';
+function $(id){return document.getElementById(id)}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+var settings={}; try{settings=JSON.parse(lsGet(GHK))||{}}catch(e){settings={}}
+function field(id,val){var el=$(id); if(el&&el.value==='') el.value=val||''}
+field('ghOwner', settings.owner||'ymizuno401-arch');
+field('ghRepo', settings.repo||'company-site-prototype');
+field('ghBranch', settings.branch||'main');
+field('ghPath', settings['path_'+CFG.id]||CFG.path);
+field('ghToken', settings.token||'');
+function readSettings(){
+  var s={owner:$('ghOwner').value.trim(),repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim()||'main',token:$('ghToken').value.trim()};
+  s.path=$('ghPath').value.trim()||CFG.path;
+  var store={}; try{store=JSON.parse(lsGet(GHK))||{}}catch(e){}
+  store.owner=s.owner;store.repo=s.repo;store.branch=s.branch;store.token=s.token;store['path_'+CFG.id]=s.path;
+  lsSet(GHK,JSON.stringify(store));
+  return s;
+}
+['ghOwner','ghRepo','ghBranch','ghPath','ghToken'].forEach(function(id){var el=$(id); if(el) el.addEventListener('change',readSettings)});
+function status(msg,ok){var el=$('ghStatus'); if(el){el.textContent=msg; el.style.color= ok===true?'#0c3b2e':(ok===false?'#b00020':'#4a5750')}}
+function b64enc(str){var bytes=new TextEncoder().encode(str);var bin='';var CH=0x8000;for(var i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH))}return btoa(bin)}
+function b64dec(b64){var bin=atob(String(b64).replace(/\n/g,''));var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function api(s,path,opts){
+  opts=opts||{}; opts.headers=Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+s.token,'X-GitHub-Api-Version':'2022-11-28'},opts.headers||{});
+  return fetch('https://api.github.com/repos/'+encodeURIComponent(s.owner)+'/'+encodeURIComponent(s.repo)+path,opts);
+}
+function errText(res){if(res.status===401)return 'トークンが違うか、期限切れです（401）';if(res.status===403)return '権限が足りません（403）。トークンの対象リポジトリと Contents: Read and write を確認してください';if(res.status===404)return '見つかりません（404）。リポジトリ名と、トークンの対象リポジトリを確認してください';return 'GitHubがエラーを返しました（'+res.status+'）'}
+function needSettings(){var s=readSettings(); if(!s.owner||!s.repo||!s.token){status('持ち主・リポジトリ名・トークンを入れてください。',false); return null} return s}
+$('ghTest').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('接続を確認しています…');
+  api(s,'').then(function(res){ if(!res.ok){status('接続できません：'+errText(res),false); return null} return res.json() }).then(function(j){ if(j) status('接続できました：'+j.full_name+'（このトークンで書き込み可否は「保存する」で最終確認できます）',true) }).catch(function(e){ status('通信に失敗しました。ネット接続を確認してください。',false) });
+});
+function getFile(s){
+  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)).then(function(res){
+    if(res.status===404) return null;
+    if(!res.ok) throw new Error(errText(res));
+    return res.json();
+  });
+}
+$('ghLoad').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubから読み込んでいます…');
+  getFile(s).then(function(f){
+    if(!f){status('GitHub側にまだ保存ファイルがありません（'+s.path+'）。先に「GitHubへ保存する」を押すと作られます。',false); return}
+    var text=b64dec(f.content); var d;
+    try{ d=JSON.parse(text) }catch(e){ status('GitHub側のファイルがJSONとして読めませんでした。今のデータはそのままです。',false); return }
+    if(!CFG.validate(d)){ status('GitHub側のファイル形式が、このエディタの形式と合いません。今のデータはそのままです。',false); return }
+    if(!confirm('GitHubの内容で、このブラウザ内のデータを上書きします。よろしいですか？')){ status('読み込みをやめました。今のデータはそのままです。'); return }
+    lsSet(CFG.key, JSON.stringify(d));
+    status('読み込みました。画面を再表示します…',true);
+    setTimeout(function(){location.reload()},600);
+  }).catch(function(e){ status('読み込みに失敗しました：'+e.message+'（今のデータはそのままです）',false) });
+});
+$('ghSave').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubへ保存しています…');
+  var payload; try{ payload=JSON.stringify(CFG.getData(),null,2) }catch(e){ status('保存するデータの取り出しに失敗しました。',false); return }
+  getFile(s).then(function(f){
+    var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
+    if(f&&f.sha) body.sha=f.sha;
+    return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  }).then(function(res){
+    if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
+    status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+  }).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
+});
+})();
+</script>
+</body></html>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>会社サイト 更新アプリ（試作）</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",system-ui,sans-serif;background:#f7f6f2;color:#17211c}
+header{position:sticky;top:0;z-index:10;background:#0c3b2e;color:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header b{letter-spacing:.08em}header .sp{flex:1}
+button{border:1px solid #d9d7cd;background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;min-height:38px}
+button.primary{background:#c96f8d;border-color:#c96f8d;color:#fff}
+button.danger{color:#b00020}button.small{padding:5px 10px;min-height:32px;font-size:12px}
+.layout{display:grid;grid-template-columns:520px 1fr;gap:0;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.editor{padding:16px}.preview{position:sticky;top:57px;height:calc(100vh - 57px);overflow:auto;background:#fff;border-left:1px solid #d9d7cd}
+@media(max-width:900px){.preview{position:static;height:auto}}
+.sec{background:#fff;border:1px solid #d9d7cd;border-radius:14px;padding:14px;margin-bottom:14px}
+.sec-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sec-head .type{font-size:11px;font-weight:800;letter-spacing:.1em;color:#4c2a85;background:#efeaf7;padding:3px 8px;border-radius:999px}
+.sec-head input.t{flex:1;font-size:16px;font-weight:800}
+input,textarea,select{width:100%;border:1px solid #d9d7cd;border-radius:8px;padding:9px 10px;font:inherit;font-size:14px;background:#fff}
+textarea{min-height:64px}label{font-size:12px;font-weight:800;color:#4a5750;display:block;margin:10px 0 4px}
+.block{border:1px dashed #c9c7bd;border-radius:10px;padding:10px;margin-top:10px;background:#fbfaf7}
+.block-head{display:flex;gap:6px;align-items:center;margin-bottom:6px}.block-head span{flex:1;font-size:12px;font-weight:800;color:#666}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.note{font-size:12.5px;color:#666;line-height:1.7;padding:0 16px}
+.addbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+/* preview styles (C' 上品寄り) */
+.pv{font-family:Georgia,"Hiragino Kaku Gothic ProN",sans-serif}
+.pv-hero{background:#0a2e23;color:#f2f5f1;padding:36px 28px}.pv-hero h1{font-size:42px;line-height:1;margin:10px 0}.pv-hero p{color:#dde8e1}
+.pv-sec{padding:28px}.pv-sec h2{font-family:Georgia,serif;font-size:30px;margin:4px 0 14px}
+.pv-sec .jp{font-size:12px;letter-spacing:.2em;color:#777;font-weight:700}
+.pv-card{border:1px solid #ddd;border-radius:12px;padding:14px;margin:10px 0}
+.pv-biz{background:#211336;color:#efeaf7;padding:28px}.pv-biz .pv-card{background:transparent;border-color:rgba(255,255,255,.25);color:#efeaf7}
+.pv-frame{background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.05) 14px 15px),linear-gradient(160deg,#c9c9c7,#bdbdbb);border-radius:10px;padding:22px;text-align:center;color:#555;font-size:13px;margin:8px 0}
+.hidden-sec{opacity:.45}
+#toTop{position:fixed;right:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;border:1px solid #0c3b2e;background:#0c3b2e;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;cursor:pointer}
+</style><meta name="robots" content="noindex,nofollow,noimageai">
+</head><body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+<header><b>会社サイト 更新アプリ（試作）</b><span style="font-size:12px;opacity:.85">入力はこのブラウザの中だけに保存されます</span><span class="sp"></span>
+<a href="./articles.html"><button>お知らせ・インタビュー編集へ</button></a>
+<a href="./members.html"><button>メンバー編集へ</button></a>
+<button id="exportJson">JSON書き出し</button>
+<button id="importBtn">JSON読み込み</button><input id="importFile" type="file" accept=".json" hidden>
+<button id="exportHtml" class="primary">サイトHTML書き出し</button>
+<button id="resetBtn">初期状態に戻す</button></header>
+<details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
+<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">GitHub接続（テスト環境）― 読み込み・保存</summary>
+<div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
+<label>リポジトリの持ち主 <input id="ghOwner" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>リポジトリ名 <input id="ghRepo" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>ブランチ <input id="ghBranch" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>保存先ファイル（このエディタ用） <input id="ghPath" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>アクセストークン（fine-grained PAT） <input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button id="ghTest" type="button">接続テスト</button>
+<button id="ghLoad" type="button">GitHubから読み込む</button>
+<button id="ghSave" type="button" style="background:#0c3b2e;color:#fff;border-color:#0c3b2e">GitHubへ保存する</button>
+</div>
+<div id="ghStatus" style="font-size:12.5px;color:#4a5750">未接続です。設定を入れて「接続テスト」を押してください。</div>
+<p style="font-size:12px;color:#777;margin:0">トークンはこのブラウザの中（localStorage）にだけ保存されます。チャットやMuse側には送られません。接続先は公開リポジトリなので、保存したデータは誰でも見られます。テスト中はダミーデータだけを保存してください。読み込み・保存が失敗しても、このブラウザ内のデータとJSON書き出しは今までどおり使えます。</p>
+</div>
+</details>
+
+<div class="layout">
+<div class="editor">
+<p class="note" style="padding:0">使い方：セクション（塊）は追加・削除・上下移動・表示ON/OFFができます。中身の要素（お知らせ1件、メンバー1人、事業1行など）も同じです。新しく足せるセクションは下のボタンから選べます。</p>
+<div id="sections"></div>
+<div class="addbar"><span style="font-weight:800;font-size:13px">＋ セクションを追加：</span>
+<button class="small" data-addsec="text">自由テキスト</button>
+<button class="small" data-addsec="news">お知らせ</button>
+<button class="small" data-addsec="business">事業</button>
+<button class="small" data-addsec="members">メンバー</button>
+<button class="small" data-addsec="company">会社概要</button>
+<button class="small" data-addsec="partners">提携先</button>
+<button class="small" data-addsec="image">画像枠</button>
+</div>
+<p class="note" style="padding:0">GitHub接続（テスト環境）は上の「GitHub接続」パネルから使えます。未接続のときは、これまでどおり「書き出し」したファイルを公開側に置く形です。</p>
+</div>
+<div class="preview"><div id="preview" class="pv"></div></div>
+</div>
+<script>
+const KEY='companySiteEditorV1';
+const uid=()=>Math.random().toString(36).slice(2,9);
+const defaults=()=>({sections:[
+ {id:uid(),type:'hero',visible:true,title:'VOICE, dressed in CHARACTER.',jp:'声優 × コスプレ',items:[{id:uid(),label:'リード文',text:'声と姿で、キャラクターに命を吹き込むエンターテインメント会社。'},{id:uid(),label:'ポイント',text:'所属メンバーの出演・マネジメント'}]},
+ {id:uid(),type:'news',visible:true,title:'NEWS',jp:'お知らせ',items:[{id:uid(),label:'2026.11.10',text:'公式サイトをリニューアルしました'},{id:uid(),label:'2026.11.05',text:'冬のファンミーティング開催のお知らせ'}]},
+ {id:uid(),type:'business',visible:true,title:'BUSINESS',jp:'事業一覧',items:[{id:uid(),label:'声優・タレント マネジメント',text:'アニメ・ゲーム・ナレーションなどの出演調整'},{id:uid(),label:'コスプレ・ライブイベント',text:'ステージ出演、撮影会、ファンイベントの企画・運営'}]},
+ {id:uid(),type:'members',visible:true,title:'MEMBERS',jp:'メンバー',items:[{id:uid(),label:'VOICE ACTOR',text:'メンバー A｜アニメ・ゲーム出演'},{id:uid(),label:'COSPLAYER',text:'メンバー B｜イベント出演／衣装制作'}]},
+ {id:uid(),type:'company',visible:true,title:'COMPANY',jp:'会社概要',items:[{id:uid(),label:'会社名',text:'（正式名称は確定後に掲載）'},{id:uid(),label:'所在地',text:'東京都内（詳細は確定後に掲載）'}]},
+ {id:uid(),type:'partners',visible:true,title:'PARTNERS',jp:'提携先',items:[{id:uid(),label:'提携先ロゴ',text:'推奨 640 × 280'}]},
+]});
+const memStore={};function safeGet(k){try{return localStorage.getItem(k)}catch(e){return memStore[k]||null}}let saveFailed=false;function safeSet(k,v){try{localStorage.setItem(k,v);saveFailed=false;return true}catch(e){memStore[k]=v;if(!saveFailed){saveFailed=true;setTimeout(()=>alert('保存容量を超えたため、この端末に保存できていません。JSON書き出しでバックアップを取り、不要な画像・動画を減らしてください。'),50)}return false}}
+let data; try{data=JSON.parse(safeGet(KEY))||defaults()}catch(e){data=defaults()}
+const typeName={hero:'ヒーロー',news:'お知らせ',business:'事業',members:'メンバー',company:'会社概要',partners:'提携先',text:'自由テキスト',image:'画像枠',contact:'お問い合わせ'};
+function save(){safeSet(KEY,JSON.stringify(data));renderPreview()}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function move(arr,i,d){const j=i+d;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]]}
+function readImageFile(file,maxW){return new Promise((res,rej)=>{const img=new Image();const url=URL.createObjectURL(file);img.onload=()=>{const scale=Math.min(1,maxW/img.naturalWidth);const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);let out=cv.toDataURL('image/webp',0.85);if(!out.startsWith('data:image/webp'))out=cv.toDataURL('image/jpeg',0.85);res(out)};img.onerror=rej;img.src=url})}
+function render(){
+ const box=document.getElementById('sections');box.innerHTML='';
+ data.sections.forEach((s,si)=>{
+  const el=document.createElement('div');el.className='sec'+(s.visible?'':' hidden-sec');
+  el.innerHTML=`<div class="sec-head"><span class="type">${typeName[s.type]||s.type}</span>
+   <input class="t" value="${esc(s.title)}" data-f="title" placeholder="見出し（英字）">
+   <button class="small" data-act="up">↑</button><button class="small" data-act="down">↓</button>
+   <button class="small" data-act="vis">${s.visible?'表示中':'非表示'}</button>
+   <button class="small danger" data-act="del">削除</button></div>
+   <label>日本語ラベル</label><input value="${esc(s.jp||'')}" data-f="jp" placeholder="例：お知らせ">
+   <div class="items"></div>
+   <div style="margin-top:10px"><button class="small" data-act="additem">＋ 要素を追加</button></div>`;
+  el.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',e=>{s[e.target.dataset.f]=e.target.value;save()}));
+  el.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{
+   const a=b.dataset.act;
+   if(a==='up')move(data.sections,si,-1); if(a==='down')move(data.sections,si,1);
+   if(a==='vis')s.visible=!s.visible; if(a==='del'){if(confirm('このセクションを削除しますか？'))data.sections.splice(si,1)}
+   if(a==='additem')s.items.push({id:uid(),label:'',text:''});
+   save();render();
+  }));
+  const itemsBox=el.querySelector('.items');
+  s.items.forEach((it,ii)=>{
+   const b=document.createElement('div');b.className='block';
+   b.innerHTML=`<div class="block-head"><span>要素 ${ii+1}</span><button class="small" data-a="up">↑</button><button class="small" data-a="down">↓</button><button class="small danger" data-a="del">削除</button></div>
+    <div class="grid2"><div><label>ラベル／名前／日付</label><input value="${esc(it.label)}" data-k="label"></div>
+    <div><label>本文／説明</label><input value="${esc(it.text)}" data-k="text"></div></div>
+    <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="file" accept="image/*" class="imgFile" style="display:none"><button class="small primary imgUp">画像をアップロード</button>${it.img?'<button class="small danger imgDel">画像を外す</button><img src="'+esc(it.img)+'" alt="" style="max-width:120px;border-radius:6px">':'<span style="font-size:11px;color:#888">メンバー写真・ヒーロー画像などに。横幅1200pxに自動で縮小</span>'}</div>`;
+   b.querySelectorAll('input[data-k]').forEach(inp=>inp.addEventListener('input',e=>{it[e.target.dataset.k]=e.target.value;save()}));
+   const imgF=b.querySelector('.imgFile');b.querySelector('.imgUp').addEventListener('click',()=>imgF.click());imgF.addEventListener('change',async()=>{const f=imgF.files[0];if(!f)return;try{it.img=await readImageFile(f,1200);save();render()}catch(e){alert('読み込めませんでした')}});const idel=b.querySelector('.imgDel');if(idel)idel.addEventListener('click',()=>{delete it.img;save();render()});
+   b.querySelectorAll('[data-a]').forEach(btn=>btn.addEventListener('click',()=>{const a=btn.dataset.a;if(a==='up')move(s.items,ii,-1);if(a==='down')move(s.items,ii,1);if(a==='del')s.items.splice(ii,1);save();render()}));
+   itemsBox.appendChild(b);
+  });
+  box.appendChild(el);
+ });
+ renderPreview();
+}
+function renderPreview(){
+ const pv=document.getElementById('preview');let h='';
+ data.sections.filter(s=>s.visible).forEach(s=>{
+  if(s.type==='hero'){h+=`<div class="pv-hero"><div style="font-size:12px;letter-spacing:.25em">${esc(s.jp)}</div><h1>${esc(s.title)}</h1>${s.items.map(it=>`<p><b>${esc(it.label)}：</b>${esc(it.text)}</p>`).join('')}</div>`}
+  else if(s.type==='business'){h+=`<div class="pv-biz"><div class="jp" style="color:#c9bde0">${esc(s.jp)}</div><h2>${esc(s.title)}</h2>${s.items.map((it,i)=>`<div class="pv-card"><b>0${i+1} ${esc(it.label)}</b><br>${esc(it.text)}</div>`).join('')}</div>`}
+  else if(s.type==='image'){h+=`<div class="pv-sec"><div class="jp">${esc(s.jp)}</div><h2>${esc(s.title)}</h2>${s.items.map(it=>it.img?`<img src="${esc(it.img)}" alt="${esc(it.label)}" style="width:100%;border-radius:10px">`:`<div class="pv-frame">${esc(it.label)}<br>${esc(it.text)}</div>`).join('')}</div>`}
+  else{h+=`<div class="pv-sec"><div class="jp">${esc(s.jp)}</div><h2>${esc(s.title)}</h2>${s.items.map(it=>`<div class="pv-card">${it.img?`<img src="${esc(it.img)}" alt="${esc(it.label)}" style="width:100%;border-radius:8px;margin-bottom:8px">`:''}<b>${esc(it.label)}</b><br>${esc(it.text)}</div>`).join('')}</div>`}
+ });
+ pv.innerHTML=h||'<p style="padding:20px;color:#888">表示中のセクションがありません</p>';
+}
+document.querySelectorAll('[data-addsec]').forEach(b=>b.addEventListener('click',()=>{
+ const t=b.dataset.addsec;data.sections.push({id:uid(),type:t,visible:true,title:t.toUpperCase(),jp:typeName[t],items:[{id:uid(),label:'',text:''}]});save();render();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}));
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
+document.getElementById('exportJson').onclick=()=>download('site-data.json',JSON.stringify(data,null,2),'application/json');
+document.getElementById('exportHtml').onclick=()=>{const pv=document.getElementById('preview').innerHTML;download('index-updated.html','<!doctype html><html lang="ja"><meta charset="utf-8"><title>会社サイト</title><body style="margin:0;font-family:sans-serif">'+pv+'</body></html>','text/html')};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{let d;try{d=JSON.parse(t)}catch(err){alert('JSONとして読めませんでした。取り込みは中止しました（今のデータはそのままです）。');return}if(!d||typeof d!=='object'||!Array.isArray(d.sections)){alert('このファイルは、この編集ページの書き出し形式ではありません。取り込みは中止しました（今のデータはそのままです）。');return}data=d;save();render();alert('読み込みました')})};
+document.getElementById('resetBtn').onclick=()=>{if(confirm('初期状態に戻しますか？入力内容は消えます')){data=defaults();save();render()}};
+render();
+</script><button id="toTop" title="上に戻る" aria-label="上に戻る">△</button>
+<script>const _tt=document.getElementById("toTop");if(_tt){window.addEventListener("scroll",()=>{_tt.style.display=window.scrollY>300?"block":"none"},{passive:true});_tt.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}))}</script>
+
+<script>
+window.__GHCFG = {id:'site',key:'companySiteEditorV1',path:'data/site.json',label:'ページ編集',validate:function(d){return !!d&&typeof d==='object'&&Array.isArray(d.sections)},getData:function(){return data}};
+(function(){
+var CFG=window.__GHCFG, GHK='companySiteGitHubV1';
+function $(id){return document.getElementById(id)}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+var settings={}; try{settings=JSON.parse(lsGet(GHK))||{}}catch(e){settings={}}
+function field(id,val){var el=$(id); if(el&&el.value==='') el.value=val||''}
+field('ghOwner', settings.owner||'ymizuno401-arch');
+field('ghRepo', settings.repo||'company-site-prototype');
+field('ghBranch', settings.branch||'main');
+field('ghPath', settings['path_'+CFG.id]||CFG.path);
+field('ghToken', settings.token||'');
+function readSettings(){
+  var s={owner:$('ghOwner').value.trim(),repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim()||'main',token:$('ghToken').value.trim()};
+  s.path=$('ghPath').value.trim()||CFG.path;
+  var store={}; try{store=JSON.parse(lsGet(GHK))||{}}catch(e){}
+  store.owner=s.owner;store.repo=s.repo;store.branch=s.branch;store.token=s.token;store['path_'+CFG.id]=s.path;
+  lsSet(GHK,JSON.stringify(store));
+  return s;
+}
+['ghOwner','ghRepo','ghBranch','ghPath','ghToken'].forEach(function(id){var el=$(id); if(el) el.addEventListener('change',readSettings)});
+function status(msg,ok){var el=$('ghStatus'); if(el){el.textContent=msg; el.style.color= ok===true?'#0c3b2e':(ok===false?'#b00020':'#4a5750')}}
+function b64enc(str){var bytes=new TextEncoder().encode(str);var bin='';var CH=0x8000;for(var i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH))}return btoa(bin)}
+function b64dec(b64){var bin=atob(String(b64).replace(/\n/g,''));var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function api(s,path,opts){
+  opts=opts||{}; opts.headers=Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+s.token,'X-GitHub-Api-Version':'2022-11-28'},opts.headers||{});
+  return fetch('https://api.github.com/repos/'+encodeURIComponent(s.owner)+'/'+encodeURIComponent(s.repo)+path,opts);
+}
+function errText(res){if(res.status===401)return 'トークンが違うか、期限切れです（401）';if(res.status===403)return '権限が足りません（403）。トークンの対象リポジトリと Contents: Read and write を確認してください';if(res.status===404)return '見つかりません（404）。リポジトリ名と、トークンの対象リポジトリを確認してください';return 'GitHubがエラーを返しました（'+res.status+'）'}
+function needSettings(){var s=readSettings(); if(!s.owner||!s.repo||!s.token){status('持ち主・リポジトリ名・トークンを入れてください。',false); return null} return s}
+$('ghTest').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('接続を確認しています…');
+  api(s,'').then(function(res){ if(!res.ok){status('接続できません：'+errText(res),false); return null} return res.json() }).then(function(j){ if(j) status('接続できました：'+j.full_name+'（このトークンで書き込み可否は「保存する」で最終確認できます）',true) }).catch(function(e){ status('通信に失敗しました。ネット接続を確認してください。',false) });
+});
+function getFile(s){
+  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)).then(function(res){
+    if(res.status===404) return null;
+    if(!res.ok) throw new Error(errText(res));
+    return res.json();
+  });
+}
+$('ghLoad').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubから読み込んでいます…');
+  getFile(s).then(function(f){
+    if(!f){status('GitHub側にまだ保存ファイルがありません（'+s.path+'）。先に「GitHubへ保存する」を押すと作られます。',false); return}
+    var text=b64dec(f.content); var d;
+    try{ d=JSON.parse(text) }catch(e){ status('GitHub側のファイルがJSONとして読めませんでした。今のデータはそのままです。',false); return }
+    if(!CFG.validate(d)){ status('GitHub側のファイル形式が、このエディタの形式と合いません。今のデータはそのままです。',false); return }
+    if(!confirm('GitHubの内容で、このブラウザ内のデータを上書きします。よろしいですか？')){ status('読み込みをやめました。今のデータはそのままです。'); return }
+    lsSet(CFG.key, JSON.stringify(d));
+    status('読み込みました。画面を再表示します…',true);
+    setTimeout(function(){location.reload()},600);
+  }).catch(function(e){ status('読み込みに失敗しました：'+e.message+'（今のデータはそのままです）',false) });
+});
+$('ghSave').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubへ保存しています…');
+  var payload; try{ payload=JSON.stringify(CFG.getData(),null,2) }catch(e){ status('保存するデータの取り出しに失敗しました。',false); return }
+  getFile(s).then(function(f){
+    var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
+    if(f&&f.sha) body.sha=f.sha;
+    return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  }).then(function(res){
+    if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
+    status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+  }).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
+});
+})();
+</script>
+</body></html>

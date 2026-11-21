@@ -45,3 +45,7 @@ User-agent: *
 Disallow: /company-site-prototype/preview/
 
 Sitemap: https://ymizuno401-arch.github.io/company-site-prototype/sitemap.xml
+
+User-agent: *
+Disallow: /company-site-prototype/admin/
+Disallow: /company-site-prototype/data/

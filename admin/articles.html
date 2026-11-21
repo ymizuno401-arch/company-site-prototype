@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>お知らせ・インタビュー 編集（クラシック型）</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans",system-ui,sans-serif;background:#f7f6f2;color:#17211c}
+header{position:sticky;top:0;z-index:10;background:#0c3b2e;color:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header .sp{flex:1}button{border:1px solid #d9d7cd;background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;min-height:38px}
+button.primary{background:#c96f8d;border-color:#c96f8d;color:#fff}button.danger{color:#b00020}button.small{padding:5px 10px;min-height:32px;font-size:12px}
+.layout{display:grid;grid-template-columns:300px 1fr 380px;gap:0;align-items:start}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}}
+.col{padding:16px}.preview{background:#fff;border-left:1px solid #d9d7cd;min-height:100vh}
+@media(max-width:1100px){.preview{border-left:none}}
+.art{display:block;width:100%;text-align:left;background:#fff;border:1px solid #d9d7cd;border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer}
+.art.on{border-color:#4c2a85;background:#f3effa}.art b{display:block;font-size:14px;line-height:1.5}
+.art span{font-size:12px;color:#666}.badge{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:#17604a;color:#fff}
+.badge.interview{background:#4c2a85}.badge.event{background:#8a6d1f}.badge.media{background:#5b6470}.badge.draft{background:#888}
+input,textarea,select{width:100%;border:1px solid #d9d7cd;border-radius:8px;padding:9px 10px;font:inherit;font-size:14px;background:#fff}
+label{font-size:12px;font-weight:800;color:#4a5750;display:block;margin:12px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;background:#efeee8;border:1px solid #d9d7cd;border-bottom:none;border-radius:10px 10px 0 0;padding:8px}
+.toolbar button{min-height:32px;padding:4px 10px;border-radius:8px;font-size:13px}
+#body{border-radius:0 0 10px 10px;min-height:320px;line-height:1.8}
+#body h2{font-size:20px}#body blockquote{border-left:3px solid #c96f8d;margin:12px 0;padding:4px 12px;color:#444;background:#fbfaf7}
+.pv h1{font-size:24px;line-height:1.5}.pv .meta{color:#777;font-size:13px}.pv .content{line-height:1.9;font-size:15px}
+.frame{background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.05) 14px 15px),linear-gradient(160deg,#c9c9c7,#bdbdbb);border-radius:10px;padding:20px;text-align:center;color:#555;font-size:13px;margin:12px 0}
+.note{font-size:12.5px;color:#666;line-height:1.7}
+#toTop{position:fixed;right:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;border:1px solid #0c3b2e;background:#0c3b2e;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;cursor:pointer}
+</style><meta name="robots" content="noindex,nofollow,noimageai">
+</head><body>
+<div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;">確認用ページ</div>
+    <p style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;">パスワードを入力してください。<br>一度入力すると、この端末では次回から不要です。</p>
+    <form id="site-gate-form">
+      <input id="site-gate-input" type="password" inputmode="text" autocomplete="off" placeholder="パスワード" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px;margin-bottom:10px;">
+      <div id="site-gate-error" style="display:none;color:#c00;font-size:12px;margin-bottom:10px;">パスワードが違います</div>
+      <button type="submit" style="width:100%;padding:12px;background:#00331a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;">開く</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var EXPECTED = "206e8f5d";
+  function hashStr(s){ var h = 5381; for (var i = 0; i < s.length; i++){ h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; } return h.toString(16); }
+  var gate = document.getElementById('site-gate');
+  try { if (localStorage.getItem('sitegate') === EXPECTED) { gate.style.display = 'none'; return; } } catch(e) {}
+  document.getElementById('site-gate-form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = document.getElementById('site-gate-input').value;
+    if (hashStr(v) === EXPECTED) {
+      try { localStorage.setItem('sitegate', EXPECTED); } catch(e) {}
+      gate.style.display = 'none';
+    } else {
+      document.getElementById('site-gate-error').style.display = 'block';
+    }
+  });
+})();
+</script>
+<header><b>お知らせ・インタビュー 編集</b><span style="font-size:12px;opacity:.85">クラシック型（ブロックではありません）／入力はこのブラウザの中だけに保存</span><span class="sp"></span>
+<a href="./index.html"><button>← ページ編集へ</button></a>
+<a href="./members.html"><button>メンバー編集へ</button></a>
+<label style="color:#fff;margin:0;font-size:12px">今の権限（試作用の切替） <select id="roleSel" style="width:auto;padding:6px 8px"><option value="admin">管理者</option><option value="editor">編集者</option><option value="writer">ライター</option><option value="photographer">撮影</option></select></label>
+<button id="exportJson">JSON書き出し</button><button id="exportHtml" class="primary">記事HTML書き出し</button></header>
+<details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
+<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">GitHub接続（テスト環境）― 読み込み・保存</summary>
+<div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
+<label>リポジトリの持ち主 <input id="ghOwner" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>リポジトリ名 <input id="ghRepo" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>ブランチ <input id="ghBranch" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>保存先ファイル（このエディタ用） <input id="ghPath" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<label>アクセストークン（fine-grained PAT） <input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_…" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button id="ghTest" type="button">接続テスト</button>
+<button id="ghLoad" type="button">GitHubから読み込む</button>
+<button id="ghSave" type="button" style="background:#0c3b2e;color:#fff;border-color:#0c3b2e">GitHubへ保存する</button>
+</div>
+<div id="ghStatus" style="font-size:12.5px;color:#4a5750">未接続です。設定を入れて「接続テスト」を押してください。</div>
+<p style="font-size:12px;color:#777;margin:0">トークンはこのブラウザの中（localStorage）にだけ保存されます。チャットやMuse側には送られません。接続先は公開リポジトリなので、保存したデータは誰でも見られます。テスト中はダミーデータだけを保存してください。読み込み・保存が失敗しても、このブラウザ内のデータとJSON書き出しは今までどおり使えます。</p>
+</div>
+</details>
+
+<div style="background:#fff;border-bottom:1px solid #d9d7cd;padding:10px 16px"><details><summary style="font-weight:800;cursor:pointer;font-size:14px">このアプリでできること／権限ごとの違いを見る</summary>
+<div style="overflow:auto"><table style="border-collapse:collapse;font-size:13px;margin-top:10px;min-width:760px">
+<tr><th style="border:1px solid #ddd;padding:7px;text-align:left">できること</th><th style="border:1px solid #ddd;padding:7px">管理者</th><th style="border:1px solid #ddd;padding:7px">編集者</th><th style="border:1px solid #ddd;padding:7px">ライター</th><th style="border:1px solid #ddd;padding:7px">撮影</th></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">ページ編集（セクション・要素の足し引き）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">記事の作成・編集（クラシック型、クレジット複数人、パーマリンク、SEO・GEO）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○ 下書きのみ</td><td style="border:1px solid #ddd;padding:7px">△ 画像欄だけ</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">確認依頼に出す</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">公開する（公開で確認用URLは自動取消）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">先方確認用URLの発行・再発行・取消（期限なし）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">× 依頼のみ</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">画像・動画の追加、説明（alt／キャプション）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">△ 自分の記事</td><td style="border:1px solid #ddd;padding:7px">○</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">サイト全体のコンテンツ更新（ページ・記事・メンバー・お知らせ等すべて）</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">記事の削除</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+<tr><td style="border:1px solid #ddd;padding:7px">利用者の招待・権限の付与／変更、サイト設定、GitHub接続</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
+</table></div>
+<p class="note">本番では、ログインした人ごとにこの権限が自動で付きます（GitHub直結時に実装）。この試作では上の切替で動きを試せます。先方（インタビュー相手）はログインなしで、確認用URLだけを見られます。</p></details></div>
+<div class="layout">
+<div class="col">
+<button id="newBtn" class="primary" style="width:100%">＋ 新規記事</button>
+<button id="newEventBtn" style="width:100%;margin-top:8px">＋ イベントお知らせを作る</button>
+<p class="note">インタビューもお知らせも、ここでは同じ「記事」として扱います。カテゴリで分けます。</p>
+<div id="list"></div>
+</div>
+<div class="col" id="editor" style="background:#fff;border-left:1px solid #eee;border-right:1px solid #eee;min-height:100vh"></div>
+<div class="col preview"><div class="pv" id="preview"></div></div>
+</div>
+<script>
+const KEY='companySiteArticlesV1';const uid=()=>Math.random().toString(36).slice(2,9);
+const roleName={subject:'話し手',interviewer:'聞き手',photographer:'撮影',writer:'文'};
+function sanitizeSlug(s){return String(s||'').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9-_]/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'')}
+function autoSlug(a){return sanitizeSlug(a.cat+'-'+String(a.date||'').replace(/-/g,'')+'-'+a.id.slice(0,4))}
+const blank=()=>({id:uid(),status:'draft',cat:'info',date:new Date().toISOString().slice(0,10),title:'',slug:'',credits:[],blocks:[],summary:'',seoTitle:'',description:'',keyPoints:'',thumb:'',body:'<p>本文をここに書きます。</p>'});
+function articleUrl(a){return 'https://ymizuno401-arch.github.io/company-site-prototype/news/'+(a.slug||autoSlug(a))+'/'}
+const blockName={image:'画像',video:'動画',youtube:'YouTube',book:'商品・書籍',event:'イベント情報'};
+const palette=['#17211c','#b03060','#1d6fb8','#1e7d4f','#7a3ea8','#c26a00','#0e7c86','#b00020','#4c2a85','#8a6d1f'];
+function readImageFile(file,maxW){return new Promise((res,rej)=>{const img=new Image();const url=URL.createObjectURL(file);img.onload=()=>{const scale=Math.min(1,maxW/img.naturalWidth);const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);let out=cv.toDataURL('image/webp',0.85);if(!out.startsWith('data:image/webp'))out=cv.toDataURL('image/jpeg',0.85);res(out)};img.onerror=rej;img.src=url})}
+function readRawFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+function storageWarn(){try{const v=safeGet(KEY);return v&&v.length>4200000}catch(e){return false}}
+function ytId(u){const m=String(u||'').match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:''}
+function isbn10of(i13){if(!/^978\d{9}[\dX]$/.test(i13||''))return '';const core=i13.slice(3,12);let s=0;for(let i=0;i<9;i++)s+=Number(core[i])*(10-i);const c=(11-(s%11))%11;return core+(c===10?'X':String(c))}
+function amazonUrl(b){const i13=(b.isbn||'').replace(/[^0-9X]/gi,'');const i10=isbn10of(i13);if(i10)return 'https://www.amazon.co.jp/dp/'+i10;if(i13)return 'https://www.amazon.co.jp/s?k='+i13;return 'https://www.amazon.co.jp/s?k='+encodeURIComponent(b.title||'')}
+function rakutenUrl(b){const i13=(b.isbn||'').replace(/[^0-9X]/gi,'');if(i13)return 'https://books.rakuten.co.jp/search/?isbnJan='+i13;return 'https://books.rakuten.co.jp/search/?sitem='+encodeURIComponent(b.title||'')}
+function relatedScore(a,o){let s=0;if(a.cat===o.cat)s+=2;const words=x=>new Set((String(x.title||'')+' '+String(x.summary||'')+' '+String(x.keyPoints||'')).replace(/[\s、。・「」『』（）()]/g,' ').split(' ').filter(w=>w.length>=2));const wa=words(a);words(o).forEach(w=>{if(wa.has(w))s++});(a.credits||[]).forEach(c=>{if((o.credits||[]).some(d=>d.name&&d.name===c.name))s+=3});return s}
+function autoRelated(a){return arts.filter(o=>o.id!==a.id).map(o=>({o,s:relatedScore(a,o)})).filter(x=>x.s>0).sort((x,y)=>y.s-x.s).slice(0,3).map(x=>x.o.id)}
+function relatedHtml(a){const ids=(a.related&&a.related.length?a.related:autoRelated(a));const list=ids.map(id=>arts.find(o=>o.id===id)).filter(Boolean);if(!list.length)return '';return `<div style="border:1px solid #d9d7cd;border-radius:12px;padding:16px;margin:16px 0;background:#fbfaf7"><b>関連記事</b><ul style="margin:8px 0 0;padding-left:18px">${list.map(o=>`<li style="margin:6px 0"><a href="${esc(articleUrl(o))}">${esc(o.title||'（タイトル未設定）')}</a> <span style="color:#777;font-size:12px">${esc(catName[o.cat]||'')}｜${esc(o.date||'')}</span></li>`).join('')}</ul></div>`}
+function blocksHtml(a){return (a.blocks||[]).map(b=>{const card='border:1px solid #d9d7cd;border-radius:12px;padding:16px;margin:16px 0;background:#fff';
+ if(b.type==='image')return `<figure style="${card}">${b.url?`<img src="${esc(b.url)}" alt="${esc(b.meta||'')}" style="max-width:100%;border-radius:8px">`:`<div style="background:#eee;border-radius:8px;padding:28px;text-align:center;color:#666">画像：${esc(b.title||'未設定')}</div>`}<figcaption style="margin-top:8px;font-size:13px;color:#555">${esc(b.caption||'')}</figcaption></figure>`;
+ if(b.type==='video')return `<figure style="${card}"><video controls preload="none" ${b.url2?`poster="${esc(b.url2)}"`:''} src="${esc(b.url||'')}" style="width:100%;border-radius:8px"></video><figcaption style="margin-top:8px;font-size:13px;color:#555">${esc(b.caption||b.title||'')}</figcaption></figure>`;
+ if(b.type==='youtube'){const id=ytId(b.url);return `<div style="${card}"><b>YouTube｜${esc(b.title||'動画')}</b>${id?`<a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${esc(b.title||'YouTube動画')}" style="width:100%;border-radius:8px;margin-top:10px"></a><p><a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">▶ YouTubeで見る</a></p>`:`<p style="color:#888">YouTubeのURLを入れるとサムネイルが出ます</p>`}</div>`}
+ if(b.type==='book'){const u1=safeUrl(b.url),u2=safeUrl(b.url2),u3=safeUrl(b.url3);if(!b.title&&!u1&&!u2&&!u3&&!b.cover)return '';return `<div style="${card}">${b.cover?`<img src="${esc(b.cover)}" alt="${esc(b.title||'商品の画像')}" style="float:right;width:92px;border-radius:6px;margin:0 0 8px 12px" onerror="this.remove()">`:''}<span style="font-size:11px;font-weight:800;color:#4c2a85">商品・書籍</span><h3 style="margin:6px 0">${esc(b.title||'')}</h3><p style="margin:4px 0;color:#555">${esc(b.meta||'')}</p>${b.caption?`<p style="font-size:13px">${esc(b.caption)}</p>`:''}<p style="display:flex;gap:8px;flex-wrap:wrap">${u1?`<a href=\"${esc(u1)}" target="_blank" rel="noopener sponsored" style="background:#ff9900;color:#111;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:800">Amazonで見る</a>`:''}${u2?`<a href=\"${esc(u2)}" target="_blank" rel="noopener sponsored" style="background:#bf0000;color:#fff;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:800">楽天で見る</a>`:''}${u3?`<a href=\"${esc(u3)}" target="_blank" rel="noopener sponsored" style="background:#232f3e;color:#fff;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:800">Kindleで見る</a>`:''}</p></div>`}
+ if(b.type==='event'){const eu=safeUrl(b.url);return `<div style="${card}"><span style="font-size:11px;font-weight:800;color:#8a6d1f">イベント</span><h3 style="margin:6px 0">${esc(b.title||'イベント名')}</h3><p style="margin:4px 0">${esc(b.meta||'')}</p>${b.caption?`<p style="font-size:13px;color:#555">${esc(b.caption)}</p>`:''}${eu?`<p><a href=\"${esc(eu)}" target="_blank" rel="noopener" style="background:#0c3b2e;color:#fff;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:800">詳細・チケット</a></p>`:''}</div>`;}
+ return ''}).join('')}
+function jsonLd(a){const persons=r=>(a.credits||[]).filter(c=>c.role===r&&c.name).map(c=>({'@type':'Person',name:c.name}));const o={'@context':'https://schema.org','@type':a.cat==='interview'?'Article':'NewsArticle',headline:a.seoTitle||a.title,description:a.description||a.summary,datePublished:a.date,url:articleUrl(a),author:persons('subject'),contributor:[...persons('interviewer'),...persons('photographer'),...persons('writer')]};if(a.thumb)o.image=[a.thumb];return o}
+const defaults=()=>[
+ {id:uid(),status:'published',cat:'interview',date:'2026-11-10',slug:'interview-20261110-member-a',title:'メンバー A インタビュー「声で演じる、という仕事」',credits:[{role:'subject',name:'メンバー A',color:'#b03060'},{role:'subject',name:'メンバー B',color:'#1d6fb8'},{role:'interviewer',name:'聞き手 A',color:'#1e7d4f'},{role:'photographer',name:'撮影 A'}],summary:'デビューのきっかけから、役づくりで大切にしていることまで。',seoTitle:'',description:'',keyPoints:'メンバー Aは声優としてアニメ・ゲームに出演しています。\n役づくりで大切にしているのは、場面の空気を変える一言です。',blocks:[{type:'book',title:'（例）書籍タイトル',meta:'著者名／出版社',url:'',url2:'',caption:'書籍を出している人は、Amazonと楽天のボタンを同じ形で付けます。'},{type:'event',title:'（例）出演イベント名',meta:'2026年12月21日｜会場名',url:'',caption:'イベントがある人は、日時・会場・詳細リンクを同じ形で付けます。'}],thumb:'',body:'<h2>声で演じる、ということ</h2><p>――デビューのきっかけを教えてください。</p><blockquote>最初は小さな役でした。でも、その一言で場面が変わるのが面白くて。</blockquote><p>本文はこの調子で、質問と答えを積み重ねます。</p><h2>座談会の例（名前の色分け）</h2><p><span style="color:#b03060"><b>メンバー A</b></span>：私はこの場面が一番好きで。</p><p><span style="color:#1d6fb8"><b>メンバー B</b></span>：分かります。空気が変わりましたよね。</p>'},
+ {id:uid(),status:'published',cat:'info',date:'2026-11-08',slug:'site-renewal-20261108',title:'公式サイトをリニューアルしました',credits:[],summary:'お知らせとメンバー紹介のページを新しくしました。',thumb:'',body:'<p>公式サイトをリニューアルしました。今後ともよろしくお願いいたします。</p>'},
+];
+const memStore={};function safeGet(k){try{return localStorage.getItem(k)}catch(e){return memStore[k]||null}}
+let saveFailed=false;function safeSet(k,v){try{localStorage.setItem(k,v);saveFailed=false;return true}catch(e){memStore[k]=v;if(!saveFailed){saveFailed=true;setTimeout(()=>alert('保存容量を超えたため、この端末に保存できていません。JSON書き出しでバックアップを取り、不要な画像・動画を減らしてください。'),50)}return false}}
+let arts;try{arts=JSON.parse(safeGet(KEY))||defaults()}catch(e){arts=defaults()}
+arts.forEach(a=>{if(!Array.isArray(a.credits)){a.credits=a.person?[{role:'subject',name:a.person}]:[]}delete a.person;if(!Array.isArray(a.blocks))a.blocks=[]});
+function creditsText(a){return Object.keys(roleName).map(r=>{const names=(a.credits||[]).filter(c=>c.role===r&&c.name).map(c=>c.name);return names.length?roleName[r]+'：'+names.join('、'):''}).filter(Boolean).join(' ／ ')}
+let cur=arts[0]?.id;
+let role=safeGet('companySiteRole')||'admin';
+const roleSel=document.getElementById('roleSel');if(roleSel){roleSel.value=role;roleSel.addEventListener('change',()=>{role=roleSel.value;safeSet('companySiteRole',role);renderEditor();alert('権限を「'+roleSel.options[roleSel.selectedIndex].text+'」に切り替えました（試作用）')})}
+function canPublish(){return role==='admin'||role==='editor'}
+function canPreviewUrl(){return role==='admin'||role==='editor'}
+function canDelete(){return role==='admin'||role==='editor'}
+const catName={info:'お知らせ',interview:'インタビュー',event:'イベント',media:'メディア'};
+function save(){safeSet(KEY,JSON.stringify(arts));renderList();renderPreview()}
+function goEditor(focus){const ed=document.getElementById('editor');if(!ed)return;requestAnimationFrame(()=>{ed.scrollIntoView({behavior:'smooth',block:'start'});if(focus){const t=ed.querySelector('[data-k="title"]');if(t)setTimeout(()=>{try{t.focus({preventScroll:true})}catch(e){}},350)}})}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const safeUrl=u=>{u=String(u||'').replace(/[\u0000-\u0020]+/g,'');if(!u)return '';if(/^(https?:|mailto:|tel:)/i.test(u))return u;if(u[0]==='#'||u.startsWith('/')||u.startsWith('./')||u.startsWith('../'))return u;if(!/^[a-z][a-z0-9+.-]*:/i.test(u))return u;return ''};
+function get(){return arts.find(a=>a.id===cur)}
+const BASE='https://ymizuno401-arch.github.io/company-site-prototype/preview/';
+function genToken(){const c='abcdefghjkmnpqrstuvwxyz23456789';let s='';const arr=new Uint32Array(24);crypto.getRandomValues(arr);arr.forEach(n=>s+=c[n%c.length]);return s}
+function previewUrl(a){return BASE+a.previewToken+'.html'}
+function keyPointsHtml(a){const pts=(a.keyPoints||'').split('\n').map(s=>s.trim()).filter(Boolean);return pts.length?'<section style="border:1px solid #d9d7cd;border-radius:10px;padding:12px 16px;margin:16px 0"><b>要点</b><ul>'+pts.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul></section>':''}
+function buildPreviewHtml(a){return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="'+esc(a.description||a.summary||'')+'"><title>'+esc(a.seoTitle||a.title)+'</title><script type="application/ld+json">'+JSON.stringify(jsonLd(a))+'<\/script><style>body{font-family:sans-serif;max-width:800px;margin:0 auto;padding:24px 16px;line-height:1.9;color:#17211c}h1{line-height:1.5}.meta{color:#777}blockquote{border-left:3px solid #c96f8d;margin:12px 0;padding:4px 12px;background:#fbfaf7}.banner{background:#211336;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px}</style></head><body><p class="banner">確認用ページです。一般公開はされていません。内容の転載・転送はお控えください。</p><p class="meta">'+esc(a.date)+'｜'+catName[a.cat]+'</p>'+(creditsText(a)?'<p class="meta">'+esc(creditsText(a))+'</p>':'')+'<h1>'+esc(a.title)+'</h1><p>'+esc(a.summary)+'</p>'+keyPointsHtml(a)+'<hr>'+(a.body||'')+blocksHtml(a)+relatedHtml(a)+'</body></html>'}
+function renderList(){
+ const box=document.getElementById('list');box.innerHTML='';
+ [...arts].sort((a,b)=>b.date.localeCompare(a.date)).forEach(a=>{
+  const b=document.createElement('button');b.className='art'+(a.id===cur?' on':'');
+  b.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="badge ${a.status!=='published'?'draft':''}">${a.status==='draft'?'下書き':a.status==='review'?'確認依頼':'公開'}</span> <span>${esc(a.date)}</span><b>${esc(a.title||'（無題）')}</b><span>${esc(creditsText(a))}</span>`;
+  b.onclick=()=>{cur=a.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)goEditor(false)};box.appendChild(b);
+ });
+}
+function renderEditor(){
+ const a=get();const ed=document.getElementById('editor');
+ if(!a){ed.innerHTML='<p class="note">記事がありません。新規記事を押してください。</p>';return}
+ ed.innerHTML=`
+ <h2 style="margin:0 0 4px;font-size:18px">記事を編集</h2><p class="note" style="margin:0">タイトルから順に入れてください。入力すると自動で保存とプレビューが更新されます。</p>
+ <label>タイトル</label><input data-k="title" value="${esc(a.title)}" placeholder="記事タイトル">
+ <label>パーマリンク（URLの末尾／英小文字・数字・ハイフンだけ）</label>
+ <div style="display:flex;gap:8px;align-items:center"><span style="font-size:12px;color:#777;white-space:nowrap">…/news/</span><input id="slugInput" value="${esc(a.slug||'')}" placeholder="例：interview-20261110-member-a"><button class="small" id="slugAuto">自動で作る</button></div>
+ <p class="note" id="slugMsg">日本語はURLに入れません（文字化け・コピペで壊れるため）。空欄なら公開時に自動生成します。他の記事と重なると警告します。</p>
+ <div class="grid2"><div><label>カテゴリ</label><select data-k="cat">
+  ${Object.entries(catName).map(([k,v])=>`<option value="${k}" ${a.cat===k?'selected':''}>${v}</option>`).join('')}</select></div>
+ <div><label>日付</label><input type="date" data-k="date" value="${esc(a.date)}"></div></div>
+ <div><label>状態</label><select data-k="status"><option value="draft" ${a.status==='draft'?'selected':''}>下書き</option><option value="review" ${a.status==='review'?'selected':''}>確認依頼</option><option value="published" ${a.status==='published'?'selected':''}>公開</option></select></div>
+ <details class="drawer" id="credDrawer"><summary>関係者クレジット <span class="cnt">（話し手＝インタビュー対象者／聞き手／撮影／文。何人でも追加できます）</span></summary>
+ <div id="credits"></div>
+ <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+ <button class="small" data-addcredit="subject">＋ 話し手（対象者）</button><button class="small" data-addcredit="interviewer">＋ 聞き手</button><button class="small" data-addcredit="photographer">＋ 撮影</button><button class="small" data-addcredit="writer">＋ 文</button>
+ </div>
+ <p class="note">鼎談・対談・複数人取材もこの形で入れます。ここで入れた人は、下の本文ツールバーの「話者」に色付きで出ます（名前はボールド＋色で付きます）。</p>
+ </details>
+ <label>サムネイル画像</label><input data-k="thumb" value="${esc(String(a.thumb||'').startsWith('data:')?'（アップロード済み画像）':(a.thumb||''))}" placeholder="ファイル名／URL、または下のボタンでアップロード">
+ <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><input type="file" id="thumbFile" accept="image/*" style="display:none"><button class="small primary" id="thumbUp">画像をアップロード</button><span class="note">スマホの写真フォルダからも選べます。横幅960pxに自動で縮小します</span></div>
+ ${a.thumb?`<img src="${esc(a.thumb)}" alt="サムネイルのプレビュー" style="max-width:260px;border-radius:8px;margin-top:8px">`:''}
+ <label>概要（一覧・カルーセルに出る短い文）</label><textarea data-k="summary" rows="2">${esc(a.summary)}</textarea>
+ <label>本文（クラシック型）</label>
+ <div class="toolbar">
+  <button data-cmd="bold"><b>太字</b></button><button data-cmd="italic"><i>斜体</i></button>
+  <button data-cmd="formatBlock" data-val="h2">見出し</button><button data-cmd="formatBlock" data-val="p">本文</button>
+  <button data-cmd="formatBlock" data-val="blockquote">引用／答え</button>
+  <button data-cmd="insertUnorderedList">箇条書き</button><button id="linkBtn">リンク</button><button id="hrBtn">区切り線</button>
+  <span style="display:inline-flex;gap:4px;align-items:center;margin-left:6px" id="colorBar" aria-label="文字の色">
+  <span style="font-size:11px;font-weight:800;color:#666">色：</span>
+  </span><input type="color" id="customColor" value="#b03060" title="自由な色を選ぶ" style="width:34px;height:28px;padding:1px;vertical-align:middle">
+  <button id="colorApply">選んだ色にする</button><button id="colorClear">色を戻す</button>
+ </div>
+ <div id="speakerColors" style="margin-top:8px"></div>
+ <div id="body" contenteditable="true">${a.body||''}</div>
+ <p class="note">インタビューの型：見出し → 質問（本文）→ 答え（引用）→ 本文、の繰り返しで揃います。ブロックを積む操作はありません。</p>
+ <div style="display:flex;gap:8px;margin-top:14px"><button id="dupBtn">複製</button><button id="delBtn" class="danger">この記事を削除</button></div>
+ <details class="drawer"><summary>関連ブロック <span class="cnt">（画像・動画・YouTube・書籍・イベント）</span></summary>
+ <p class="note" style="margin:6px 0">画像・動画・YouTube・書籍・イベントは、種類ごとに決まったカード形式で表示されます。追加・削除・並べ替えができます。</p>
+ <div id="blocks"></div>
+ <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+ <button class="small" data-addblock="image">＋ 画像</button><button class="small" data-addblock="video">＋ 動画</button><button class="small" data-addblock="youtube">＋ YouTube</button><button class="small" data-addblock="book">＋ 商品・書籍（Amazon・楽天・Kindle）</button><button class="small" data-addblock="event">＋ イベント情報</button>
+ </div></details>
+ <details class="drawer"><summary>関連記事（内部リンク） <span class="cnt">（自動で選ばれます）</span></summary>
+ <p class="note" style="margin:6px 0">同じカテゴリ・同じ登場人物・共通のことばが多い記事を自動で選び、記事の末尾に出します。チェックで付け外しできます。</p>
+ <div id="relatedBox"></div>
+ <button class="small" id="relatedAuto" style="margin-top:8px">自動で選び直す</button>
+ </details>
+ <details class="drawer" style="border-color:#17604a;background:#f7fbf8"><summary>SEO・GEO対策</summary>
+ <p class="note" style="margin:6px 0">SEO＝検索向け、GEO＝AI検索（ChatGPT等の引用）向けです。空欄は自動で補いますが、要点だけは人が書くのが効きます。</p>
+ <label>SEOタイトル（空欄なら記事タイトルを使う）</label><input data-k="seoTitle" value="${esc(a.seoTitle||'')}" placeholder="例：メンバー A インタビュー｜声で演じる仕事">
+ <label>説明文／メタディスクリプション（80〜120字目安）</label><textarea data-k="description" rows="2" placeholder="空欄なら概要を使います">${esc(a.description||'')}</textarea>
+ <label>記事の要点（GEO用・1行に1点、3点まで。記事冒頭にも「要点」として出ます）</label><textarea data-k="keyPoints" rows="3" placeholder="例：&#10;メンバー Aは声優としてアニメ・ゲームに出演しています。">${esc(a.keyPoints||'')}</textarea>
+ <div id="seoCheck" class="note" style="margin-top:8px"></div>
+ <details style="margin-top:8px"><summary style="font-size:13px;font-weight:700;cursor:pointer">構造化データ（JSON-LD）を見る</summary><pre id="ldPreview" style="white-space:pre-wrap;font-size:11px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px"></pre></details>
+ </details>
+ <details class="drawer" style="border-color:#4c2a85;background:#fbf9ff"><summary>先方確認用URL（期限なし）</summary>
+ <p class="note" style="margin:6px 0">ワンクリックで、推測できない文字列の確認用URLを発行します。期限は付きません。記事を「公開」にすると、この確認用URLは自動で取り消されます（公開側のファイル削除も必要）。手動で止めたいときは「取り消す」＋公開側のファイルを消すと無効になります。URLを知っている人は誰でも見られるので、転送されうる前提で使ってください。</p>
+ <label>確認用URL</label>
+ <input id="pvUrl" readonly value="${a.previewToken?previewUrl(a):''}" placeholder="まだ発行していません">
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+ <button id="issueBtn" class="primary">${a.previewToken?'確認用ページを更新してURLをコピー':'ワンクリックで確認用URLを発行'}</button>
+ ${a.previewToken?'<button id="copyBtn">URLをコピー</button><button id="reissueBtn">再発行（URLを作り直す）</button><button id="revokeBtn" class="danger">取り消す</button>':''}
+ </div>
+ ${a.previewIssuedAt?`<p class="note">発行日：${esc(a.previewIssuedAt)}（期限なし）</p>`:''}
+ </details>`;
+ ed.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',e=>{const k=e.target.dataset.k;if(k==='thumb'&&String(a.thumb||'').startsWith('data:'))return;a[k]=e.target.value;if(k==='status'&&e.target.value==='published'&&a.previewToken){const old=previewUrl(a);delete a.previewToken;delete a.previewIssuedAt;save();renderEditor();alert('公開にしたので、確認用URLは自動で取り消しました。\n公開側に置いた確認用ファイルも消してください：\n'+old);return}save()}));
+ const tf=ed.querySelector('#thumbFile');ed.querySelector('#thumbUp').addEventListener('click',()=>tf.click());tf.addEventListener('change',async()=>{const f=tf.files[0];if(!f)return;try{a.thumb=await readImageFile(f,960);save();renderEditor();renderPreview();if(storageWarn())alert('保存しました。ただブラウザ内の保存容量が残り少なめです。大きな画像はURL指定か、GitHub直結後のアップロードが安全です。')}catch(e){alert('読み込めませんでした。別の画像で試してください。')}});
+ const credBox=ed.querySelector('#credits');
+ (a.credits||[]).forEach((c,ci)=>{if(!c.color)c.color=palette[(ci+1)%palette.length];const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:120px 1fr 40px auto;gap:8px;margin-top:8px;align-items:center';row.innerHTML=`<select data-cr="role">${Object.entries(roleName).map(([k,v])=>`<option value="${k}" ${c.role===k?'selected':''}>${v}</option>`).join('')}</select><input data-cr="name" value="${esc(c.name)}" placeholder="名前"><input type="color" data-cr="color" value="${esc(c.color)}" title="この人の色（話者の色）" style="width:40px;height:34px;padding:1px"><button class="small danger" data-cr="del">削除</button>`;row.querySelector('[data-cr="role"]').addEventListener('input',e=>{c.role=e.target.value;save();renderEditor()});row.querySelector('[data-cr="name"]').addEventListener('input',e=>{c.name=e.target.value;save()});row.querySelector('[data-cr="color"]').addEventListener('input',e=>{c.color=e.target.value;save();renderEditor()});row.querySelector('[data-cr="del"]').addEventListener('click',()=>{a.credits.splice(ci,1);save();renderEditor()});credBox.appendChild(row)});
+ ed.querySelectorAll('[data-addcredit]').forEach(b=>b.addEventListener('click',()=>{a.credits=a.credits||[];a.credits.push({role:b.dataset.addcredit,name:''});save();renderEditor()}));
+ const blockBox=ed.querySelector('#blocks');const blockFields={image:[['title','名前／見出し'],['url','画像URL・ファイル名'],['meta','alt（画像の説明・SEO用）'],['caption','キャプション']],video:[['title','見出し'],['url','動画URL（MP4／WebM）'],['url2','ポスター画像URL（任意）'],['caption','キャプション']],youtube:[['title','動画タイトル'],['url','YouTubeのURL']],book:[['title','商品名・書籍名'],['meta','著者／メーカー・ブランド／出版社'],['url','AmazonのURL'],['url2','楽天のURL'],['url3','KindleのURL'],['caption','紹介文（任意）']],event:[['title','イベント名'],['meta','日時｜会場'],['url','詳細・チケットのURL'],['caption','補足（任意）']]};
+ (a.blocks||[]).forEach((b,bi)=>{const row=document.createElement('div');row.style.cssText='border:1px dashed #c9c7bd;border-radius:10px;padding:10px;margin-top:10px;background:#fbfaf7';row.innerHTML=`<div style="display:flex;gap:6px;align-items:center"><b style="flex:1;font-size:13px">${blockName[b.type]||b.type}</b><button class="small" data-ba="up">↑</button><button class="small" data-ba="down">↓</button><button class="small danger" data-ba="del">削除</button></div>`+(blockFields[b.type]||[]).map(([k,lab])=>`<label>${lab}</label><input data-bk="${k}" value="${esc(b[k]||'')}">`).join('');row.querySelectorAll('[data-bk]').forEach(inp=>inp.addEventListener('input',e=>{b[e.target.dataset.bk]=e.target.value;save()}));row.querySelectorAll('[data-ba]').forEach(btn=>btn.addEventListener('click',()=>{const act=btn.dataset.ba;if(act==='del')a.blocks.splice(bi,1);if(act==='up'&&bi>0)[a.blocks[bi-1],a.blocks[bi]]=[a.blocks[bi],a.blocks[bi-1]];if(act==='down'&&bi<a.blocks.length-1)[a.blocks[bi+1],a.blocks[bi]]=[a.blocks[bi],a.blocks[bi+1]];save();renderEditor()}));
+ if(b.type==='book'){const sb=document.createElement('div');sb.style.cssText='margin-top:10px;border-top:1px dashed #ddd;padding-top:10px';sb.innerHTML='<b style="font-size:13px">書籍検索（書籍名・著者名から探して選ぶと自動で反映）</b><div style="display:flex;gap:6px;margin-top:6px"><input class="bq" placeholder="例：書籍タイトル 著者名" style="flex:1"><button class="small primary bsearch">検索</button></div><div class="bresults" style="margin-top:8px"></div><p style="font-size:11px;color:#888;margin:6px 0 0">書籍は検索から選べます（公開書誌データ Open Library）。選ぶとタイトル・著者／出版社・表紙・ISBNが入り、Amazonと楽天のリンクが自動で作られます。書籍以外の商品は、Amazon／楽天／KindleのURLを下の欄に貼ればOKです。紹介する商品がなければ、このブロックは公開側に表示されません。</p>';row.appendChild(sb);
+ const run=async()=>{const q=sb.querySelector('.bq').value.trim();const box=sb.querySelector('.bresults');if(!q){box.innerHTML='<span style="color:#b00">検索のことばを入れてください</span>';return}box.textContent='検索中…';try{const r=await fetch('https://openlibrary.org/search.json?q='+encodeURIComponent(q)+'&limit=8&fields=title,author_name,publisher,isbn,first_publish_year');const j=await r.json();const docs=(j.docs||[]).filter(d=>(d.isbn||[]).length);if(!docs.length){box.innerHTML='見つかりませんでした。ことばを変えるか、下の欄に手入力してください。 <a target="_blank" rel="noopener" href="https://www.amazon.co.jp/s?k='+encodeURIComponent(q)+'">Amazonで探す</a> / <a target="_blank" rel="noopener" href="https://books.rakuten.co.jp/search/?sitem='+encodeURIComponent(q)+'">楽天で探す</a>';return}box.innerHTML='';docs.forEach(d=>{const isbn=String((d.isbn||[]).find(x=>/^97[89]/.test(x))||d.isbn[0]||'').replace(/[^0-9Xx]/g,'');const item=document.createElement('div');item.style.cssText='display:flex;gap:10px;align-items:center;border:1px solid #e3e1d8;border-radius:10px;padding:8px;margin-top:6px;background:#fff';item.innerHTML=`<img src="https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg" alt="" style="width:34px" onerror="this.remove()"><span style="flex:1;font-size:13px"><b>${esc(d.title||'')}</b><br>${esc((d.author_name||[]).join('、'))}／${esc((d.publisher||[])[0]||'')} ${d.first_publish_year?'（'+d.first_publish_year+'）':''}<br><span style="color:#888">ISBN: ${esc(isbn)}</span></span>`;const pick=document.createElement('button');pick.className='small primary';pick.textContent='この本を選ぶ';pick.addEventListener('click',()=>{b.title=d.title||'';b.meta=((d.author_name||[]).join('、'))+((d.publisher||[])[0]?'／'+d.publisher[0]:'');b.isbn=isbn;b.cover='https://covers.openlibrary.org/b/isbn/'+isbn+'-M.jpg';b.url=amazonUrl(b);b.url2=rakutenUrl(b);save();renderEditor();renderPreview();alert('反映しました：'+b.title)});item.appendChild(pick);box.appendChild(item)})}catch(e){box.innerHTML='検索に接続できませんでした。下の欄への手入力か、<a target="_blank" rel="noopener" href="https://www.amazon.co.jp/s?k='+encodeURIComponent(q)+'">Amazon</a>／<a target="_blank" rel="noopener" href="https://books.rakuten.co.jp/search/?sitem='+encodeURIComponent(q)+'">楽天</a>で探してURLを貼ってください。'}};
+ sb.querySelector('.bsearch').addEventListener('click',run);sb.querySelector('.bq').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();run()}})}
+ if(b.type==='image'||b.type==='video'){const up=document.createElement('div');up.style.cssText='margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';const fi=document.createElement('input');fi.type='file';fi.accept=b.type==='image'?'image/*':'video/mp4,video/webm';fi.style.display='none';const btn=document.createElement('button');btn.className='small primary';btn.type='button';btn.textContent=b.type==='image'?'画像をアップロード':'動画をアップロード';const note=document.createElement('span');note.className='note';note.textContent=b.type==='image'?'横幅1400pxに自動で縮小します':'目安2MBまで（ブラウザ保存の上限）。それ以上はYouTubeか、GitHub直結後の置き場へ';btn.addEventListener('click',()=>fi.click());fi.addEventListener('change',async()=>{const f=fi.files[0];if(!f)return;try{if(b.type==='image'){b.url=await readImageFile(f,1400)}else{if(f.size>2*1024*1024){alert('動画が2MBを超えています。ブラウザ保存の上限のため、大きい動画はYouTubeか、GitHub直結後の置き場を使ってください。');return}b.url=await readRawFile(f)}save();renderEditor();renderPreview()}catch(e){alert('読み込めませんでした')}});up.appendChild(fi);up.appendChild(btn);up.appendChild(note);row.appendChild(up);
+ if(b.url&&b.type==='image')row.insertAdjacentHTML('beforeend','<img src="'+esc(b.url)+'" alt="" style="max-width:220px;border-radius:8px;margin-top:8px">');
+ if(b.url&&b.type==='video')row.insertAdjacentHTML('beforeend','<video src="'+esc(b.url)+'" controls preload="metadata" style="max-width:260px;border-radius:8px;margin-top:8px"></video>')}
+ blockBox.appendChild(row)});
+ ed.querySelectorAll('[data-addblock]').forEach(btn=>btn.addEventListener('click',()=>{a.blocks=a.blocks||[];a.blocks.push({type:btn.dataset.addblock,title:'',url:'',url2:'',url3:'',meta:'',caption:'',isbn:'',cover:''});save();renderEditor()}));
+ const rbox=ed.querySelector('#relatedBox');if(!Array.isArray(a.related)||!a.related.length)a.related=autoRelated(a);
+ const others=arts.filter(o=>o.id!==a.id);if(!others.length)rbox.innerHTML='<span style="color:#888;font-size:13px">ほかの記事がまだありません</span>';
+ others.map(o=>({o,s:relatedScore(a,o)})).sort((x,y)=>y.s-x.s).forEach(({o,s})=>{const lab=document.createElement('label');lab.style.cssText='display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border:1px solid #e3e1d8;border-radius:8px;margin-top:6px;background:#fbfaf7;font-weight:400';const cb=document.createElement('input');cb.type='checkbox';cb.style.cssText='width:auto;margin-top:4px';cb.checked=a.related.includes(o.id);cb.addEventListener('change',()=>{if(cb.checked)a.related.push(o.id);else a.related=a.related.filter(id=>id!==o.id);save();renderPreview()});lab.appendChild(cb);const sp=document.createElement('span');sp.innerHTML=`<b>${esc(o.title||'（タイトル未設定）')}</b> <span style="color:#777;font-size:12px">${esc(catName[o.cat]||'')}｜${esc(o.date||'')}｜関連度 ${s}</span>`;lab.appendChild(sp);rbox.appendChild(lab)});
+ ed.querySelector('#relatedAuto').addEventListener('click',()=>{a.related=autoRelated(a);save();renderEditor();renderPreview()});
+ const slugInp=ed.querySelector('#slugInput'),slugMsg=ed.querySelector('#slugMsg');
+ function checkSlug(){const raw=slugInp.value;const clean=sanitizeSlug(raw);const dup=arts.some(x=>x.id!==a.id&&x.slug&&x.slug===clean&&clean);if(raw&&clean!==raw.toLowerCase().trim())slugMsg.textContent='日本語や記号は使えないので、英小文字・数字・ハイフンだけに直して保存します。';else if(dup)slugMsg.textContent='警告：このパーマリンクは他の記事と重なっています。変えてください。';else slugMsg.textContent=clean?('公開URL： https://ymizuno401-arch.github.io/company-site-prototype/news/'+clean+'/'):'空欄なら公開時に自動生成します。';slugMsg.style.color=dup?'#b00020':'#666';return clean}
+ slugInp.addEventListener('input',()=>{a.slug=checkSlug();safeSet(KEY,JSON.stringify(arts));renderPreview()});
+ slugInp.addEventListener('blur',()=>{a.slug=checkSlug();slugInp.value=a.slug;save()});
+ ed.querySelector('#slugAuto').addEventListener('click',()=>{a.slug=autoSlug(a);slugInp.value=a.slug;checkSlug();save();renderPreview()});
+ checkSlug();
+ function seoUpdate(){const ld=ed.querySelector('#ldPreview');if(ld)ld.textContent=JSON.stringify(jsonLd(a),null,2);const box=ed.querySelector('#seoCheck');if(!box)return;const desc=(a.description||a.summary||'');const pts=(a.keyPoints||'').split('\n').filter(Boolean);const items=[[!!(a.seoTitle||a.title),'タイトルあり'],[desc.length>=40,'説明文 '+(desc.length)+'字（40字以上が目安）'],[!!(a.slug),'パーマリンク（英字）あり'],[!!a.date,'日付あり'],[(a.credits||[]).some(c=>c.name),'話し手などのクレジットあり（GEOで「誰の話か」が伝わる）'],[pts.length>=2,'要点が2点以上（GEOでAIが引用しやすい）'],[!!a.thumb,'サムネイル／OGP画像あり']];box.innerHTML='<b>チェック：</b><br>'+items.map(([ok,t])=>(ok?'✓ ':'△ ')+t).join('<br>')}
+ seoUpdate();ed.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',seoUpdate));
+ const body=ed.querySelector('#body');
+ body.addEventListener('input',()=>{a.body=body.innerHTML;safeSet(KEY,JSON.stringify(arts));renderPreview()});
+ ed.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>{document.execCommand(b.dataset.cmd,false,b.dataset.val||null);body.focus();a.body=body.innerHTML;save()}));
+ ed.querySelector('#linkBtn').onclick=()=>{const u=prompt('リンク先URL');if(u){if(!safeUrl(u)){alert('http:// または https:// で始まるURLだけ使えます');return}document.execCommand('createLink',false,u)}a.body=body.innerHTML;save()};
+ // 文字色：選択範囲に色を付ける
+ const applyColor=(c)=>{body.focus();document.execCommand('styleWithCSS',false,true);document.execCommand('foreColor',false,c);a.body=body.innerHTML;save();renderPreview()};
+ const bar=ed.querySelector('#colorBar');palette.forEach(c=>{const s=document.createElement('button');s.type='button';s.title=c;s.style.cssText='width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #bbb;background:'+c;s.addEventListener('mousedown',e=>e.preventDefault());s.addEventListener('click',()=>applyColor(c));bar.appendChild(s)});
+ let customC=ed.querySelector('#customColor').value;ed.querySelector('#customColor').addEventListener('input',e=>{customC=e.target.value});
+ ed.querySelector('#colorApply').addEventListener('mousedown',e=>e.preventDefault());ed.querySelector('#colorApply').addEventListener('click',()=>applyColor(customC));
+ ed.querySelector('#colorClear').addEventListener('mousedown',e=>e.preventDefault());ed.querySelector('#colorClear').addEventListener('click',()=>{body.focus();document.execCommand('removeFormat',false,null);a.body=body.innerHTML;save();renderPreview()});
+ // 話者チップ：クレジット全員（話し手＝インタビュー対象者を含む）。名前などを選択して押すとボールド＋色が付く
+ const sc=ed.querySelector('#speakerColors');const named=(a.credits||[]).map((c,ci)=>({c,ci})).filter(x=>x.c.name&&x.c.name.trim()&&x.c.role!=='photographer');
+ if(named.length){const t2=document.createElement('div');t2.style.cssText='display:flex;gap:6px;flex-wrap:wrap;align-items:center';t2.innerHTML='<span style="font-size:11px;font-weight:800;color:#666">話者：</span>';named.forEach(({c,ci})=>{if(!c.color)c.color=palette[(ci+1)%palette.length];const chip=document.createElement('button');chip.type='button';chip.innerHTML='<b>'+esc(c.name)+'</b>';chip.title=(roleName[c.role]||c.role)+'｜選択中の文字にボールド＋この色を付けます';chip.style.cssText='color:'+c.color+';border:1px solid '+c.color+';background:#fff;border-radius:999px;padding:4px 12px';chip.addEventListener('mousedown',e=>e.preventDefault());chip.addEventListener('click',()=>{body.focus();document.execCommand('styleWithCSS',false,true);document.execCommand('bold',false,null);document.execCommand('foreColor',false,c.color);a.body=body.innerHTML;save();renderPreview()});t2.appendChild(chip)});sc.appendChild(t2);const hint=document.createElement('p');hint.className='note';hint.style.margin='4px 0 0';hint.textContent='座談会・対談用：本文で名前を選択 → その人のチップを押すと、ボールド＋その人の色になります。人の追加と色の変更は「関係者クレジット」の引き出しで。';sc.appendChild(hint);save()}
+ else{sc.innerHTML='<p class="note" style="margin:4px 0 0">話者チップはまだありません。「関係者クレジット」の引き出しで話し手（インタビュー対象者）や聞き手を入れると、ここに色付きで出ます。</p>'}
+
+ ed.querySelector('#hrBtn').onclick=()=>{document.execCommand('insertHorizontalRule');a.body=body.innerHTML;save()};
+ ed.querySelector('#dupBtn').onclick=()=>{const c={...a,credits:(a.credits||[]).map(x=>({...x})),blocks:JSON.parse(JSON.stringify(a.blocks||[])),related:[...(a.related||[])],id:uid(),title:a.title+'（コピー）',status:'draft'};delete c.previewToken;delete c.previewIssuedAt;arts.unshift(c);cur=c.id;save();renderEditor()};
+ ed.querySelector('#delBtn').onclick=()=>{if(confirm('この記事を削除しますか？')){arts=arts.filter(x=>x.id!==a.id);cur=arts[0]?.id;save();renderEditor()}};
+ const issue=ed.querySelector('#issueBtn');
+ if(issue)issue.onclick=async()=>{if(!a.previewToken){a.previewToken=genToken();a.previewIssuedAt=new Date().toISOString().slice(0,10)}download('preview-'+a.previewToken+'.html',buildPreviewHtml(a),'text/html');try{await navigator.clipboard.writeText(previewUrl(a))}catch(e){}save();renderEditor();alert('確認用URLをコピーしました。\n'+previewUrl(a)+'\n\nダウンロードされた preview ファイルを公開側の preview/ フォルダに置くと、そのURLで先方が見られます（期限なし）。')};
+ const cp=ed.querySelector('#copyBtn');if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(previewUrl(a));alert('コピーしました')}catch(e){prompt('このURLをコピーしてください',previewUrl(a))}};
+ const re=ed.querySelector('#reissueBtn');if(re)re.onclick=()=>{if(confirm('URLを作り直しますか？古いファイルは公開側で消すまで古いURLも生きるので、必ず古い preview ファイルを消してください。')){a.previewToken=genToken();a.previewIssuedAt=new Date().toISOString().slice(0,10);download('preview-'+a.previewToken+'.html',buildPreviewHtml(a),'text/html');save();renderEditor()}};
+ const rv=ed.querySelector('#revokeBtn');if(rv)rv.onclick=()=>{if(confirm('確認用URLを取り消しますか？公開側の preview ファイルも消してください。')){delete a.previewToken;delete a.previewIssuedAt;save();renderEditor()}};
+ // role enforcement (prototype)
+ const stSel=ed.querySelector('[data-k="status"]');
+ if(!canPublish()&&stSel){[...stSel.options].forEach(o=>{if(o.value==='published')o.disabled=true});if(a.status==='published'){stSel.disabled=true}}
+ if(!canPreviewUrl()){const ib=ed.querySelector('#issueBtn');if(ib){ib.disabled=true;ib.textContent='確認用URLは編集者以上が発行できます（ライターは依頼してください）';ib.style.opacity=.6}['#copyBtn','#reissueBtn','#revokeBtn'].forEach(s=>{const b=ed.querySelector(s);if(b)b.disabled=true})}
+ if(!canDelete()){const db=ed.querySelector('#delBtn');if(db){db.disabled=true;db.style.opacity=.5}}
+ if(role==='writer'&&a.status==='published'){ed.querySelectorAll('input,textarea,select').forEach(i=>i.disabled=true);const bd=ed.querySelector('#body');if(bd)bd.contentEditable='false'}
+ if(role==='photographer'){ed.querySelectorAll('input,textarea,select').forEach(i=>{if(i.dataset.k!=='thumb'&&!i.dataset.bk)i.disabled=true});const bd=ed.querySelector('#body');if(bd)bd.contentEditable='false'}
+}
+function renderPreview(){
+ const a=get();const pv=document.getElementById('preview');if(!a){pv.innerHTML='';return}
+ pv.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="meta">${esc(a.date)} ${a.status==='draft'?'・下書き':''}</span>
+ <h1>${esc(a.title||'（無題）')}</h1>${creditsText(a)?`<p class="meta">${esc(creditsText(a))}</p>`:''}
+ ${a.thumb?`<img src="${esc(a.thumb)}" alt="サムネイル" style="width:100%;border-radius:10px">`:`<div class="frame">サムネイル<br>推奨 960 × 540</div>`}
+ <p>${esc(a.summary)}</p>${(a.keyPoints||'').split('\n').filter(Boolean).length?`<div style="border:1px solid #d9d7cd;border-radius:10px;padding:10px 14px"><b>要点</b><ul>${(a.keyPoints||'').split('\n').filter(Boolean).map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}<p class="meta" style="margin-top:10px">公開URL：${esc(articleUrl(a))}</p><hr><div class="content">${a.body||''}</div><div>${blocksHtml(a)}</div><div>${relatedHtml(a)}</div>`;
+}
+document.getElementById('newBtn').onclick=()=>{if(role==='photographer'){alert('今の権限は「撮影」なので、新規記事は作れません。上の権限を管理者／編集者／ライターに切り替えてください。');return}const a=blank();arts.unshift(a);cur=a.id;save();renderEditor();goEditor(true)};
+document.getElementById('newEventBtn').onclick=()=>{if(role==='photographer'){alert('今の権限は「撮影」なので、新規記事は作れません。');return}const a=blank();a.cat='event';a.title='イベント名';a.body='<p>イベントのご案内です。詳細は下記のイベント情報をご覧ください。</p>';a.blocks=[{type:'event',title:'イベント名',meta:'2026年○月○日（○）00:00〜｜会場名',url:'',url2:'',caption:'出演：／料金：'}];arts.unshift(a);cur=a.id;save();renderEditor();goEditor(true);alert('イベントお知らせの雛形を作りました。タイトル・日時・会場・出演者を入れてください。大きなイベントでLPが要るときは、その都度別に作ります。')};
+function download(n,t,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type}));a.download=n;a.click()}
+document.getElementById('exportJson').onclick=()=>download('articles.json',JSON.stringify(arts,null,2),'application/json');
+document.getElementById('exportHtml').onclick=()=>{const pub=arts.filter(a=>a.status==='published');download('news-updated.html','<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>お知らせ</title>'+pub.map(a=>'<script type="application/ld+json">'+JSON.stringify(jsonLd(a))+'<\/script>').join('')+'</head><body style="font-family:sans-serif;max-width:800px;margin:20px auto;padding:0 16px">'+pub.map(a=>`<article><p>${esc(a.date)}｜${catName[a.cat]}｜${esc(articleUrl(a))}</p><h2>${esc(a.title)}</h2><p>${esc(creditsText(a))}</p>${keyPointsHtml(a)}${a.body}${blocksHtml(a)}${relatedHtml(a)}</article><hr>`).join('')+'</body></html>','text/html')};
+renderList();renderEditor();renderPreview();
+const _tt=document.getElementById('toTop');if(_tt){window.addEventListener('scroll',()=>{_tt.style.display=window.scrollY>300?'block':'none'},{passive:true});_tt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}))}
+</script><button id="toTop" title="上に戻る" aria-label="上に戻る">△</button>
+
+<script>
+window.__GHCFG = {id:'articles',key:'companySiteArticlesV1',path:'data/articles.json',label:'記事編集',validate:function(d){return Array.isArray(d)},getData:function(){return arts}};
+(function(){
+var CFG=window.__GHCFG, GHK='companySiteGitHubV1';
+function $(id){return document.getElementById(id)}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+var settings={}; try{settings=JSON.parse(lsGet(GHK))||{}}catch(e){settings={}}
+function field(id,val){var el=$(id); if(el&&el.value==='') el.value=val||''}
+field('ghOwner', settings.owner||'ymizuno401-arch');
+field('ghRepo', settings.repo||'company-site-prototype');
+field('ghBranch', settings.branch||'main');
+field('ghPath', settings['path_'+CFG.id]||CFG.path);
+field('ghToken', settings.token||'');
+function readSettings(){
+  var s={owner:$('ghOwner').value.trim(),repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim()||'main',token:$('ghToken').value.trim()};
+  s.path=$('ghPath').value.trim()||CFG.path;
+  var store={}; try{store=JSON.parse(lsGet(GHK))||{}}catch(e){}
+  store.owner=s.owner;store.repo=s.repo;store.branch=s.branch;store.token=s.token;store['path_'+CFG.id]=s.path;
+  lsSet(GHK,JSON.stringify(store));
+  return s;
+}
+['ghOwner','ghRepo','ghBranch','ghPath','ghToken'].forEach(function(id){var el=$(id); if(el) el.addEventListener('change',readSettings)});
+function status(msg,ok){var el=$('ghStatus'); if(el){el.textContent=msg; el.style.color= ok===true?'#0c3b2e':(ok===false?'#b00020':'#4a5750')}}
+function b64enc(str){var bytes=new TextEncoder().encode(str);var bin='';var CH=0x8000;for(var i=0;i<bytes.length;i+=CH){bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH))}return btoa(bin)}
+function b64dec(b64){var bin=atob(String(b64).replace(/\n/g,''));var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function api(s,path,opts){
+  opts=opts||{}; opts.headers=Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+s.token,'X-GitHub-Api-Version':'2022-11-28'},opts.headers||{});
+  return fetch('https://api.github.com/repos/'+encodeURIComponent(s.owner)+'/'+encodeURIComponent(s.repo)+path,opts);
+}
+function errText(res){if(res.status===401)return 'トークンが違うか、期限切れです（401）';if(res.status===403)return '権限が足りません（403）。トークンの対象リポジトリと Contents: Read and write を確認してください';if(res.status===404)return '見つかりません（404）。リポジトリ名と、トークンの対象リポジトリを確認してください';return 'GitHubがエラーを返しました（'+res.status+'）'}
+function needSettings(){var s=readSettings(); if(!s.owner||!s.repo||!s.token){status('持ち主・リポジトリ名・トークンを入れてください。',false); return null} return s}
+$('ghTest').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('接続を確認しています…');
+  api(s,'').then(function(res){ if(!res.ok){status('接続できません：'+errText(res),false); return null} return res.json() }).then(function(j){ if(j) status('接続できました：'+j.full_name+'（このトークンで書き込み可否は「保存する」で最終確認できます）',true) }).catch(function(e){ status('通信に失敗しました。ネット接続を確認してください。',false) });
+});
+function getFile(s){
+  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)).then(function(res){
+    if(res.status===404) return null;
+    if(!res.ok) throw new Error(errText(res));
+    return res.json();
+  });
+}
+$('ghLoad').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubから読み込んでいます…');
+  getFile(s).then(function(f){
+    if(!f){status('GitHub側にまだ保存ファイルがありません（'+s.path+'）。先に「GitHubへ保存する」を押すと作られます。',false); return}
+    var text=b64dec(f.content); var d;
+    try{ d=JSON.parse(text) }catch(e){ status('GitHub側のファイルがJSONとして読めませんでした。今のデータはそのままです。',false); return }
+    if(!CFG.validate(d)){ status('GitHub側のファイル形式が、このエディタの形式と合いません。今のデータはそのままです。',false); return }
+    if(!confirm('GitHubの内容で、このブラウザ内のデータを上書きします。よろしいですか？')){ status('読み込みをやめました。今のデータはそのままです。'); return }
+    lsSet(CFG.key, JSON.stringify(d));
+    status('読み込みました。画面を再表示します…',true);
+    setTimeout(function(){location.reload()},600);
+  }).catch(function(e){ status('読み込みに失敗しました：'+e.message+'（今のデータはそのままです）',false) });
+});
+$('ghSave').addEventListener('click',function(){
+  var s=needSettings(); if(!s)return; status('GitHubへ保存しています…');
+  var payload; try{ payload=JSON.stringify(CFG.getData(),null,2) }catch(e){ status('保存するデータの取り出しに失敗しました。',false); return }
+  getFile(s).then(function(f){
+    var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
+    if(f&&f.sha) body.sha=f.sha;
+    return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  }).then(function(res){
+    if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
+    status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+  }).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
+});
+})();
+</script>
+</body></html>
