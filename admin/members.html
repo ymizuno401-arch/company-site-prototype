@@ -55,7 +55,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 <p>メンバーごとに、プロフィール・写真・動画・SNSを持つ詳細ページを編集します。一覧のカードとは別に、この内容が詳細ページになります。保存はブラウザの中だけです（Museは経由しません）。</p>
 <p><a href="./index.html">← ページ編集</a>　｜　<a href="./articles.html">お知らせ・インタビュー記事の編集 →</a></p></header>
 <details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
-<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">GitHub接続（テスト環境）― 読み込み・保存</summary>
+<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">運用者用：GitHub接続設定（使用感の確認では開く必要はありません）</summary>
 <div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
 <label>リポジトリの持ち主 <input id="ghOwner" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
 <label>リポジトリ名 <input id="ghRepo" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
@@ -68,7 +68,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 <button id="ghSave" type="button" style="background:#0c3b2e;color:#fff;border-color:#0c3b2e">GitHubへ保存する</button>
 </div>
 <div id="ghStatus" style="font-size:12.5px;color:#4a5750">未接続です。設定を入れて「接続テスト」を押してください。</div>
-<p style="font-size:12px;color:#777;margin:0">トークンはこのブラウザの中（localStorage）にだけ保存されます。チャットやMuse側には送られません。接続先は公開リポジトリなので、保存したデータは誰でも見られます。テスト中はダミーデータだけを保存してください。読み込み・保存が失敗しても、このブラウザ内のデータとJSON書き出しは今までどおり使えます。</p>
+<p style="font-size:12px;color:#777;margin:0">【運用者用】トークンはこのブラウザの中（localStorage）にだけ保存されます。チャットやMuse側には送られません。接続先は公開リポジトリなので、保存したデータは誰でも見られます。テスト中はダミーデータだけを保存してください。読み込み・保存が失敗しても、このブラウザ内のデータとJSON書き出しは今までどおり使えます。／使用感の確認だけの方は、この設定は不要です。編集とプレビューはそのまま試せます（入力はお使いのブラウザ内に保存されます）。</p>
 </div>
 </details>
 
