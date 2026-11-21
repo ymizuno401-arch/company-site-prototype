@@ -734,7 +734,7 @@ Promise.all([get('members.json'),get('site.json')]).then(function(res){
   if(Array.isArray(mem)){
     var pub=mem.filter(function(m){return m.status==='published'});
     if(pub.length){
-      grid.innerHTML=pub.map(function(m){return '<article class="member">'+(m.portrait?'<img src="'+esc(m.portrait)+'" alt="'+esc(m.name)+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(m.role||'')+'</span><h4>'+esc(m.name||'')+'</h4><p>'+esc(m.catch||'')+'</p></div></article>'}).join('');
+      grid.innerHTML=pub.map(function(m){return '<article class="member">'+(m.portrait?'<img src="'+esc(m.portrait)+'" alt="'+esc(m.name)+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(m.role||'')+'</span><h4>'+esc(m.name||'')+'</h4><p>'+esc(m.catch||'')+'</p><p style="margin-top:8px"><a href="./member.html" style="font-weight:800;color:var(--purple-700)">詳細を見る →</a></p></div></article>'}).join('');
       return;
     }
   }
@@ -742,7 +742,7 @@ Promise.all([get('members.json'),get('site.json')]).then(function(res){
     var ms=null; site.sections.forEach(function(s){if(s.type==='members')ms=s});
     if(ms&&ms.visible===false){var msec=document.getElementById('members'); if(msec)msec.style.display='none'}
     else if(ms&&(ms.items||[]).length){
-      grid.innerHTML=ms.items.map(function(it){var parts=String(it.text||'').split('｜');return '<article class="member">'+(it.img?'<img src="'+esc(it.img)+'" alt="'+esc(parts[0]||'')+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(it.label)+'</span><h4>'+esc(parts[0]||'')+'</h4><p>'+esc(parts.slice(1).join('｜'))+'</p></div></article>'}).join('');
+      grid.innerHTML=ms.items.map(function(it){var parts=String(it.text||'').split('｜');return '<article class="member">'+(it.img?'<img src="'+esc(it.img)+'" alt="'+esc(parts[0]||'')+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(it.label)+'</span><h4>'+esc(parts[0]||'')+'</h4><p>'+esc(parts.slice(1).join('｜'))+'</p><p style="margin-top:8px"><a href="./member.html" style="font-weight:800;color:var(--purple-700)">詳細を見る →</a></p></div></article>'}).join('');
     }
   }
 });
