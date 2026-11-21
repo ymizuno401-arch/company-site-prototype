@@ -277,6 +277,7 @@ var LOGIN_CFG_KEY='companySiteLoginCfg', AUTH_KEY='companySiteAuthV1';
 var loginCfg={}; try{loginCfg=JSON.parse(lsGet(LOGIN_CFG_KEY))||{}}catch(e){}
 var auth={}; try{auth=JSON.parse(lsGet(AUTH_KEY))||{}}catch(e){}
 if(!loginCfg.clientId) loginCfg.clientId='Ov23li2lCVzZdv91JRks';
+if(!loginCfg.relay) loginCfg.relay='https://red-night-0d3e.y-mizuno401.workers.dev';
 var det=$('ghOwner')?$('ghOwner').closest('details'):null;
 function saveLoginCfg(){var ci=$('ghClientId'),rl=$('ghRelay');loginCfg={clientId:ci?ci.value.trim():'',relay:rl?rl.value.trim().replace(/\/$/,''):''};lsSet(LOGIN_CFG_KEY,JSON.stringify(loginCfg))}
 function saveAuth(){lsSet(AUTH_KEY,JSON.stringify(auth))}
