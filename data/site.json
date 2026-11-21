@@ -1,0 +1,113 @@
+{
+  "sections": [
+    {
+      "id": "5helmu6",
+      "type": "hero",
+      "visible": true,
+      "title": "VOICE, dressed in CHARACTER.",
+      "jp": "声優 × コスプレ",
+      "items": [
+        {
+          "id": "dmyi6fl",
+          "label": "リード文",
+          "text": "声と姿で、キャラクターに命を吹き込むエンターテインメント会社。"
+        },
+        {
+          "id": "n1etg16",
+          "label": "ポイント",
+          "text": "所属メンバーの出演・マネジメント"
+        }
+      ]
+    },
+    {
+      "id": "wrms9wq",
+      "type": "news",
+      "visible": true,
+      "title": "NEWS",
+      "jp": "お知らせ",
+      "items": [
+        {
+          "id": "u7qayft",
+          "label": "2026.11.10",
+          "text": "公式サイトをリニューアルしました"
+        },
+        {
+          "id": "r8ripv3",
+          "label": "2026.11.05",
+          "text": "冬のファンミーティング開催のお知らせ"
+        }
+      ]
+    },
+    {
+      "id": "unz9v6i",
+      "type": "business",
+      "visible": true,
+      "title": "BUSINESS",
+      "jp": "事業一覧",
+      "items": [
+        {
+          "id": "kcxzntr",
+          "label": "声優・タレント マネジメント",
+          "text": "アニメ・ゲーム・ナレーションなどの出演調整"
+        },
+        {
+          "id": "cs1wlzn",
+          "label": "コスプレ・ライブイベント",
+          "text": "ステージ出演、撮影会、ファンイベントの企画・運営"
+        }
+      ]
+    },
+    {
+      "id": "40shwtu",
+      "type": "members",
+      "visible": true,
+      "title": "MEMBERS",
+      "jp": "メンバー",
+      "items": [
+        {
+          "id": "ccsjdwl",
+          "label": "VOICE ACTOR",
+          "text": "メンバー A｜アニメ・ゲーム出演"
+        },
+        {
+          "id": "0wf89fj",
+          "label": "COSPLAYER",
+          "text": "メンバー B｜イベント出演／衣装制作"
+        }
+      ]
+    },
+    {
+      "id": "n2qlvco",
+      "type": "company",
+      "visible": true,
+      "title": "COMPANY",
+      "jp": "会社概要",
+      "items": [
+        {
+          "id": "bx1uxrb",
+          "label": "会社名",
+          "text": "（正式名称は確定後に掲載）"
+        },
+        {
+          "id": "grr0dcu",
+          "label": "所在地",
+          "text": "東京都内（詳細は確定後に掲載）"
+        }
+      ]
+    },
+    {
+      "id": "9ync3fp",
+      "type": "partners",
+      "visible": true,
+      "title": "PARTNERS",
+      "jp": "提携先",
+      "items": [
+        {
+          "id": "1c5a2nq",
+          "label": "提携先ロゴ",
+          "text": "推奨 640 × 280"
+        }
+      ]
+    }
+  ]
+}
