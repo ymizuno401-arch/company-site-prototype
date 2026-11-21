@@ -52,7 +52,40 @@ details:has(#ghOwner) summary{font-size:13px}
  h1{font-size:20px}
  #editor input[data-k="title"]{font-size:17px;font-weight:600;padding:12px}
 }
-</style><meta name="robots" content="noindex,nofollow,noimageai">
+</style>
+<style id="adminTheme">
+:root{--ink:#1d2420;--mut:#5c665f;--line:#e3ded2;--bg:#f7f5f0;--card:#fff;--green:#0c3b2e;--green-h:#0a2f25;--purple:#4c2a85;--pink:#c96f8d}
+body{background:var(--bg)!important;color:var(--ink)}
+.admin-side{position:fixed;top:0;left:0;bottom:0;width:232px;background:#0c3b2e;color:#fff;padding:22px 14px;z-index:200;display:flex;flex-direction:column;gap:4px;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+.admin-side .brand{font-weight:900;font-size:16px;letter-spacing:.04em;padding:2px 10px}
+.admin-side .brand small{display:block;font-weight:600;font-size:11px;opacity:.75;letter-spacing:.14em;margin-top:2px}
+.admin-side nav{margin-top:18px;display:flex;flex-direction:column;gap:4px}
+.admin-side a{display:block;color:#fff;text-decoration:none;padding:11px 12px;border-radius:10px;font-weight:700;font-size:14.5px;opacity:.92}
+.admin-side a:hover{opacity:1;background:rgba(255,255,255,.08)}
+.admin-side a.on{background:#fff;color:#0c3b2e;opacity:1}
+.admin-side .foot{margin-top:auto;font-size:11.5px;opacity:.7;padding:0 10px}
+#ghPanel,#ghLoginBar{display:none!important}
+body>header{background:transparent!important;color:var(--ink)!important;border-bottom:1px solid var(--line);box-shadow:none!important}
+main{max-width:940px;margin:0 auto}
+button{border-radius:999px!important;font-weight:700}
+button.primary,.primary{background:var(--green)!important;border-color:var(--green)!important;color:#fff!important}
+input,select,textarea{border-radius:12px!important;border:1.5px solid #cfc9ba!important;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(12,59,46,.35);border-color:var(--green)!important}
+label{font-size:12.5px;font-weight:700;color:#3c463f}
+details.drawer{background:#fff;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:0 1px 3px rgba(20,30,25,.05)}
+.savebar{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(8px);border-top:1.5px solid var(--green)!important;box-shadow:0 -6px 20px rgba(20,30,25,.08)!important}
+@media(min-width:900px){
+ body{padding-left:232px}
+ .savebar{left:232px!important}
+}
+@media(max-width:899px){
+ .admin-side{position:static;width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
+ .admin-side nav{margin-top:0;flex-direction:row;flex-wrap:wrap}
+ .admin-side a{padding:8px 12px;font-size:13.5px}
+ .admin-side .foot{display:none}
+}
+</style>
+<meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
 <div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:14px;padding:28px 24px;max-width:340px;width:100%;text-align:center;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif;">
@@ -83,8 +116,9 @@ details:has(#ghOwner) summary{font-size:13px}
   });
 })();
 </script>
-<header><b>お知らせ・インタビュー 編集</b><span style="font-size:12px;opacity:.85">クラシック型（ブロックではありません）／入力はこのブラウザの中だけに保存</span><span class="sp"></span>
-<a href="./index.html"><button>← ページ編集へ</button></a>
+
+<header><b>お知らせ・インタビュー 編集</b><span style="font-size:12px;opacity:.85">クラシック型（ブロックではありません）／入力はログインすると自動で同期</span><span class="sp"></span>
+<a href="./site.html"><button>← ページ編集へ</button></a>
 <a href="./members.html"><button>メンバー編集へ</button></a>
 <label style="color:#fff;margin:0;font-size:12px">今の権限（試作用の切替） <select id="roleSel" style="width:auto;padding:6px 8px"><option value="admin">管理者</option><option value="editor">編集者</option><option value="writer">ライター</option><option value="photographer">撮影</option></select></label>
 <button id="exportJson">JSON書き出し</button><button id="exportHtml" class="primary">記事HTML書き出し</button></header>
@@ -517,4 +551,16 @@ if(det){
 })();
 </script>
 <script>/*fileBanner*/if(location.protocol==='file:'){var b=document.createElement('div');b.style.cssText='background:#b91c1c;color:#fff;padding:10px 14px;font-size:14px;text-align:center';b.innerHTML='この画面（ファイル）からはサイトに公開できません。編集は <a href="https://ymizuno401-arch.github.io/company-site-prototype/admin/articles.html" style="color:#fff;text-decoration:underline">編集ページのURL</a> で開いてください';document.body.prepend(b)}</script>
+
+<script id="adminChrome">
+(function(){
+  var path=location.pathname;
+  var cur=path.indexOf('articles.html')>=0?'articles':path.indexOf('members.html')>=0?'members':path.indexOf('site.html')>=0?'site':'top';
+  var items=[['top','./','管理トップ'],['articles','./articles.html','記事を書く'],['members','./members.html','メンバー'],['site','./site.html','ページ編集']];
+  var nav=items.map(function(i){return '<a href="'+i[1]+'"'+(i[0]===cur?' class="on"':'')+'>'+i[2]+'</a>'}).join('')+'<a href="../cprime2/" target="_blank" rel="noopener">サイトを見る ↗</a>';
+  var aside=document.createElement('aside'); aside.className='admin-side';
+  aside.innerHTML='<div class="brand">ATELIER VERDE<small>管理画面</small></div><nav>'+nav+'</nav><div class="foot">ログインは管理トップだけです</div>';
+  document.body.insertBefore(aside, document.body.firstChild);
+})();
+</script>
 </body></html>
