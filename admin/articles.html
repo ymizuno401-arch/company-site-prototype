@@ -66,17 +66,35 @@ body{background:var(--bg)!important;color:var(--ink)}
 .admin-side .foot{margin-top:auto;font-size:11.5px;opacity:.7;padding:0 10px}
 #ghPanel,#ghLoginBar{display:none!important}
 body>header{background:transparent!important;color:var(--ink)!important;border-bottom:1px solid var(--line);box-shadow:none!important}
-main{max-width:940px;margin:0 auto}
 button{border-radius:999px!important;font-weight:700}
 button.primary,.primary{background:var(--green)!important;border-color:var(--green)!important;color:#fff!important}
 input,select,textarea{border-radius:12px!important;border:1.5px solid #cfc9ba!important;background:#fff}
 input:focus,select:focus,textarea:focus{outline:2px solid rgba(12,59,46,.35);border-color:var(--green)!important}
 label{font-size:12.5px;font-weight:700;color:#3c463f}
 details.drawer{background:#fff;border:1px solid var(--line)!important;border-radius:14px!important;box-shadow:0 1px 3px rgba(20,30,25,.05)}
-.savebar{background:rgba(255,255,255,.92)!important;backdrop-filter:blur(8px);border-top:1.5px solid var(--green)!important;box-shadow:0 -6px 20px rgba(20,30,25,.08)!important}
-@media(min-width:900px){
- body{padding-left:232px}
- .savebar{left:232px!important}
+.savebar{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(8px);border-bottom:1.5px solid var(--green)!important;box-shadow:0 6px 16px rgba(20,30,25,.06)!important}
+main{max-width:none!important;margin:0!important}
+.panebox{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 3px rgba(20,30,25,.05)}
+.splitter{flex:0 0 10px;cursor:col-resize;border-radius:6px;position:relative;touch-action:none}
+.splitter::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:44px;border-radius:2px;background:#c9cfc0}
+.splitter:hover::after,.splitter.drag::after{background:var(--green)}
+.pane-scroll{overflow-y:auto!important;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:#b7bfa9 transparent}
+.pane-scroll::-webkit-scrollbar{width:10px}
+.pane-scroll::-webkit-scrollbar-thumb{background:#c3c9bb;border-radius:8px;border:2px solid #fff}
+.pane-scroll::-webkit-scrollbar-track{background:transparent}
+@media(min-width:1100px){
+ body{padding-left:232px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+ body>header{flex:0 0 auto}
+ main{flex:1;min-height:0;display:flex!important;padding:12px!important}
+ .layout{flex:1;display:flex!important;gap:2px;min-height:0;width:100%}
+ main>.panel{display:flex;flex-direction:column}
+}
+@media(max-width:1099px){
+ .splitter{display:none}
+ .admin-side{position:static;width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
+ .admin-side nav{margin-top:0;flex-direction:row;flex-wrap:wrap}
+ .admin-side a{padding:8px 12px;font-size:13.5px}
+ .admin-side .foot{display:none}
 }
 @media(max-width:899px){
  .admin-side{position:static;width:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
@@ -555,12 +573,42 @@ if(det){
 <script id="adminChrome">
 (function(){
   var path=location.pathname;
-  var cur=path.indexOf('articles.html')>=0?'articles':path.indexOf('members.html')>=0?'members':path.indexOf('site.html')>=0?'site':'top';
+  var page=path.indexOf('articles.html')>=0?'articles':path.indexOf('members.html')>=0?'members':path.indexOf('site.html')>=0?'site':'top';
   var items=[['top','./','管理トップ'],['articles','./articles.html','記事を書く'],['members','./members.html','メンバー'],['site','./site.html','ページ編集']];
-  var nav=items.map(function(i){return '<a href="'+i[1]+'"'+(i[0]===cur?' class="on"':'')+'>'+i[2]+'</a>'}).join('')+'<a href="../cprime2/" target="_blank" rel="noopener">サイトを見る ↗</a>';
+  var nav=items.map(function(i){return '<a href="'+i[1]+'"'+(i[0]===page?' class="on"':'')+'>'+i[2]+'</a>'}).join('')+'<a href="../cprime2/" target="_blank" rel="noopener">サイトを見る ↗</a>';
   var aside=document.createElement('aside'); aside.className='admin-side';
   aside.innerHTML='<div class="brand">ATELIER VERDE<small>管理画面</small></div><nav>'+nav+'</nav><div class="foot">ログインは管理トップだけです</div>';
   document.body.insertBefore(aside, document.body.firstChild);
+  /* ---- resizable panes with own scrollbars (desktop) ---- */
+  var DEFAULTS={articles:[300,null,380],members:[260,null,400],site:[520,null]};
+  var defs=DEFAULTS[page]; if(!defs) return;
+  var container=document.querySelector('.layout')||document.querySelector('main');
+  if(!container) return;
+  var panes=[].filter.call(container.children,function(el){return /(col|panel|editor|preview)/.test(el.className||'')});
+  if(panes.length!==defs.length) return;
+  var saved=null; try{saved=JSON.parse(localStorage.getItem('adminCols_'+page))}catch(e){}
+  panes.forEach(function(p,i){
+    p.classList.add('panebox'); p.classList.add('pane-scroll');
+    var w=(saved&&saved[i])||defs[i];
+    if(defs[i]===null){p.style.flex='1 1 auto';p.style.minWidth='340px'}
+    else{p.style.flex='0 0 '+(w||defs[i])+'px'}
+  });
+  function persist(){var arr=panes.map(function(p,i){return defs[i]===null?null:p.getBoundingClientRect().width|0});try{localStorage.setItem('adminCols_'+page,JSON.stringify(arr))}catch(e){}}
+  for(var k=0;k<panes.length-1;k++){
+    (function(idx){
+      var sp=document.createElement('div'); sp.className='splitter'; sp.title='ドラッグで幅を変えられます';
+      container.insertBefore(sp, panes[idx+1]);
+      sp.addEventListener('pointerdown',function(ev){
+        ev.preventDefault(); sp.classList.add('drag'); sp.setPointerCapture(ev.pointerId);
+        var startX=ev.clientX;
+        var leftFixed=defs[idx]!==null, target=leftFixed?panes[idx]:panes[idx+1];
+        var startW=target.getBoundingClientRect().width;
+        function mv(e){var d=e.clientX-startX; if(!leftFixed)d=-d; var nw=Math.max(220,Math.min(900,startW+d)); target.style.flex='0 0 '+nw+'px'}
+        function up(){sp.classList.remove('drag'); sp.removeEventListener('pointermove',mv); sp.removeEventListener('pointerup',up); persist()}
+        sp.addEventListener('pointermove',mv); sp.addEventListener('pointerup',up);
+      });
+    })(k);
+  }
 })();
 </script>
 </body></html>
