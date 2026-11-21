@@ -610,7 +610,7 @@ return;
 }
 track.innerHTML = items.map(function(n){
 return '<a class="news-card" href="#news" onclick="return false">' +
-'<div class="frame" role="img" aria-label="記事サムネイルのダミー枠"><span class="f-label">記事サムネイル</span><span class="f-size">推奨 960 × 540</span></div>' +
+(n.thumb ? '<img src="' + n.thumb + '" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block">' : '<div class="frame" role="img" aria-label="記事サムネイルのダミー枠"><span class="f-label">記事サムネイル</span><span class="f-size">推奨 960 × 540</span></div>') +
 '<div class="news-body"><div class="news-meta"><span class="tag ' + n.cat + '">' + esc(n.tag) + '</span><time>' + n.date + '</time></div>' +
 '<h3>' + esc(n.title) + '</h3><p>' + esc(n.body) + '</p></div></a>';
 }).join('');
@@ -700,7 +700,7 @@ get('articles.json').then(function(arts){
   var now=new Date();var pub=arts.filter(function(a){return a.status==='published'||(a.status==='scheduled'&&a.publishAt&&new Date(a.publishAt)<=now)});
   if(!pub.length)return;
   pub.sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))});
-  var arr=pub.slice(0,8).map(function(a){return {cat:a.cat||'info',tag:catName[a.cat]||'お知らせ',date:String(a.date||'').replace(/-/g,'.'),title:a.title||'',body:a.summary||''}});
+  var arr=pub.slice(0,8).map(function(a){return {cat:a.cat||'info',tag:catName[a.cat]||'お知らせ',date:String(a.date||'').replace(/-/g,'.'),title:a.title||'',body:a.summary||'',thumb:a.thumb||''}});
   if(window.__setNews)window.__setNews(arr);
 });
 get('site.json').then(function(site){
@@ -717,7 +717,7 @@ get('site.json').then(function(site){
   var biz=byType.business, bizList=document.querySelector('.biz-list');
   if(biz&&bizList){
     if(biz.visible===false){var bs=document.getElementById('business'); if(bs)bs.style.display='none'}
-    else if((biz.items||[]).length){ bizList.innerHTML=biz.items.map(function(it,i){return '<article class="biz-row"><span class="num">'+('0'+(i+1)).slice(-2)+'</span><div><h3>'+esc(it.label)+'</h3><p>'+esc(it.text)+'</p></div><div class="frame" role="img" aria-label="事業イメージのダミー枠"><span class="f-label">事業イメージ</span><span class="f-size">推奨 960 × 540</span></div></article>'}).join('') }
+    else if((biz.items||[]).length){ bizList.innerHTML=biz.items.map(function(it,i){return '<article class="biz-row"><span class="num">'+('0'+(i+1)).slice(-2)+'</span><div><h3>'+esc(it.label)+'</h3><p>'+esc(it.text)+'</p></div>'+(it.img?'<img src="'+esc(it.img)+'" alt="'+esc(it.label)+'" style="width:300px;max-width:42%;aspect-ratio:16/9;object-fit:cover;border-radius:10px">':'<div class="frame" role="img" aria-label="事業イメージのダミー枠"><span class="f-label">事業イメージ</span><span class="f-size">推奨 960 × 540</span></div>')+'</article>'}).join('') }
   }
   var com=byType.company, dl=document.querySelector('dl.company');
   if(com&&dl){
@@ -742,7 +742,7 @@ Promise.all([get('members.json'),get('site.json')]).then(function(res){
     var ms=null; site.sections.forEach(function(s){if(s.type==='members')ms=s});
     if(ms&&ms.visible===false){var msec=document.getElementById('members'); if(msec)msec.style.display='none'}
     else if(ms&&(ms.items||[]).length){
-      grid.innerHTML=ms.items.map(function(it){var parts=String(it.text||'').split('｜');return '<article class="member"><div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div><div class="m-body"><span class="m-role">'+esc(it.label)+'</span><h4>'+esc(parts[0]||'')+'</h4><p>'+esc(parts.slice(1).join('｜'))+'</p></div></article>'}).join('');
+      grid.innerHTML=ms.items.map(function(it){var parts=String(it.text||'').split('｜');return '<article class="member">'+(it.img?'<img src="'+esc(it.img)+'" alt="'+esc(parts[0]||'')+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(it.label)+'</span><h4>'+esc(parts[0]||'')+'</h4><p>'+esc(parts.slice(1).join('｜'))+'</p></div></article>'}).join('');
     }
   }
 });

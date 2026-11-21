@@ -135,7 +135,9 @@ function renderEditor(){const ed=document.getElementById('editor');const m=get()
  ed.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',e=>{let v=e.target.value;if(e.target.dataset.k==='slug')v=sanitize(v);m[e.target.dataset.k]=v;save()}));
  const _mb=ed.querySelector('#mBackBtn');if(_mb)_mb.onclick=()=>{document.getElementById('listTabs').scrollIntoView({behavior:'smooth'})};
  const _mp=ed.querySelector('#mPreviewBtn');if(_mp)_mp.onclick=()=>{document.getElementById('preview').scrollIntoView({behavior:'smooth'})};
- function _mSave(st){m.status=st;save();renderList();renderEditor();const mm=document.querySelector('#mSaveMsg');if(mm){const d=new Date();mm.textContent='保存しました（'+(st==='published'?'公開':'下書き')+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
+
+function _ghAuto(){try{var s=JSON.parse(localStorage.getItem('companySiteGitHubV1')||'{}');if(!s.token)return;var b=document.getElementById('ghSave');if(!b)return;b.click();var tries=0;var iv=setInterval(function(){tries++;var st=document.getElementById('ghStatus');var msgEl=document.querySelector('#saveMsg,#mSaveMsg');if(st&&msgEl&&/保存しました|失敗|できません|エラー|権限|トークン/.test(st.textContent)){if(/保存しました/.test(st.textContent)){msgEl.textContent=msgEl.textContent+' ／ GitHubへも保存しました'}else{msgEl.textContent=msgEl.textContent+' ／ GitHub保存に失敗（運用者用パネルを確認）'}clearInterval(iv)}if(tries>25)clearInterval(iv)},700)}catch(e){}}
+ function _mSave(st){m.status=st;save();renderList();renderEditor();_ghAuto();const mm=document.querySelector('#mSaveMsg');if(mm){const d=new Date();mm.textContent='保存しました（'+(st==='published'?'公開':'下書き')+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
  const _md=ed.querySelector('#mSaveDraft');if(_md)_md.onclick=()=>_mSave('draft');
  const _mpb=ed.querySelector('#mSavePub');if(_mpb)_mpb.onclick=()=>_mSave('published');
  const pf=ed.querySelector('#portFile');ed.querySelector('#portUp').addEventListener('click',()=>pf.click());pf.addEventListener('change',async()=>{const f=pf.files[0];if(!f)return;m.portrait=await readImageFile(f,1000);save();renderEditor()});
