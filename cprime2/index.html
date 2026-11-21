@@ -647,6 +647,7 @@ b.setAttribute('aria-pressed', b===btn? 'true': 'false');
 render();
 });
 render();
+window.__setNews=function(arr){ if(Array.isArray(arr)&&arr.length){ NEWS=arr; current='all'; var bs=document.querySelectorAll('#filters button'); Array.prototype.forEach.call(bs,function(b){b.setAttribute('aria-pressed', b.getAttribute('data-cat')==='all'?'true':'false')}); render(); } };
 
 /* contact: compose a mailto from the form (static page, no server) */
 document.getElementById('contactForm').addEventListener('submit', function(e){
@@ -685,6 +686,75 @@ window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
 <button id="toTop" type="button" aria-label="ページの先頭へ戻る" title="先頭へ戻る">△</button>
 <script>
 (function(){var b=document.getElementById("toTop");function on(){if(window.scrollY>400){b.classList.add("show")}else{b.classList.remove("show")}}window.addEventListener("scroll",on,{passive:true});on();b.addEventListener("click",function(){var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;window.scrollTo({top:0,behavior:r?"auto":"smooth"})});})();
+</script>
+
+<script>
+/* 自動反映：data/*.json（更新アプリの保存先）を読んで表示に反映する。読めなければ静的コンテンツのまま */
+(function(){
+var BASE='../data/';
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function get(name){return fetch(BASE+name+'?v='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('ng');return r.json()}).catch(function(){return null})}
+var catName={info:'お知らせ',interview:'インタビュー',event:'イベント',media:'メディア'};
+get('articles.json').then(function(arts){
+  if(!Array.isArray(arts))return;
+  var pub=arts.filter(function(a){return a.status==='published'});
+  if(!pub.length)return;
+  pub.sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''))});
+  var arr=pub.slice(0,8).map(function(a){return {cat:a.cat||'info',tag:catName[a.cat]||'お知らせ',date:String(a.date||'').replace(/-/g,'.'),title:a.title||'',body:a.summary||''}});
+  if(window.__setNews)window.__setNews(arr);
+});
+get('site.json').then(function(site){
+  if(!site||!Array.isArray(site.sections))return;
+  var byType={}; site.sections.forEach(function(s){byType[s.type]=s});
+  var hero=byType.hero;
+  if(hero&&hero.visible!==false){
+    if(hero.title){var h1=document.querySelector('.hero h1'); if(h1)h1.textContent=hero.title}
+    var lead=(hero.items||[]).filter(function(i){return i.label==='リード文'})[0];
+    if(lead){var lp=document.querySelector('.hero-lead'); if(lp)lp.textContent=lead.text}
+    var pts=(hero.items||[]).filter(function(i){return i.label==='ポイント'});
+    if(pts.length){var hp=document.querySelectorAll('.hero-points>div>span'); pts.forEach(function(pt,i){if(hp[i])hp[i].textContent=pt.text})}
+  }
+  var biz=byType.business, bizList=document.querySelector('.biz-list');
+  if(biz&&bizList){
+    if(biz.visible===false){var bs=document.getElementById('business'); if(bs)bs.style.display='none'}
+    else if((biz.items||[]).length){ bizList.innerHTML=biz.items.map(function(it,i){return '<article class="biz-row"><span class="num">'+('0'+(i+1)).slice(-2)+'</span><div><h3>'+esc(it.label)+'</h3><p>'+esc(it.text)+'</p></div><div class="frame" role="img" aria-label="事業イメージのダミー枠"><span class="f-label">事業イメージ</span><span class="f-size">推奨 960 × 540</span></div></article>'}).join('') }
+  }
+  var com=byType.company, dl=document.querySelector('dl.company');
+  if(com&&dl){
+    if(com.visible===false){var cs=document.getElementById('company'); if(cs)cs.style.display='none'}
+    else if((com.items||[]).length){ dl.innerHTML=com.items.map(function(it){return '<div><dt>'+esc(it.label)+'</dt><dd>'+esc(it.text)+'</dd></div>'}).join('') }
+  }
+  var ns=byType.news;
+  if(ns&&ns.visible===false){var nsec=document.getElementById('news'); if(nsec)nsec.style.display='none'}
+});
+Promise.all([get('members.json'),get('site.json')]).then(function(res){
+  var mem=res[0], site=res[1];
+  var grid=document.querySelector('#members .member-grid');
+  if(!grid)return;
+  if(Array.isArray(mem)){
+    var pub=mem.filter(function(m){return m.status==='published'});
+    if(pub.length){
+      grid.innerHTML=pub.map(function(m){return '<article class="member">'+(m.portrait?'<img src="'+esc(m.portrait)+'" alt="'+esc(m.name)+'" style="width:100%;aspect-ratio:4/5;object-fit:cover;display:block">':'<div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div>')+'<div class="m-body"><span class="m-role">'+esc(m.role||'')+'</span><h4>'+esc(m.name||'')+'</h4><p>'+esc(m.catch||'')+'</p></div></article>'}).join('');
+      return;
+    }
+  }
+  if(site&&Array.isArray(site.sections)){
+    var ms=null; site.sections.forEach(function(s){if(s.type==='members')ms=s});
+    if(ms&&ms.visible===false){var msec=document.getElementById('members'); if(msec)msec.style.display='none'}
+    else if(ms&&(ms.items||[]).length){
+      grid.innerHTML=ms.items.map(function(it){var parts=String(it.text||'').split('｜');return '<article class="member"><div class="frame" role="img" aria-label="メンバーポートレートのダミー枠"><span class="f-label">ポートレート</span><span class="f-size">推奨 800 × 1000</span></div><div class="m-body"><span class="m-role">'+esc(it.label)+'</span><h4>'+esc(parts[0]||'')+'</h4><p>'+esc(parts.slice(1).join('｜'))+'</p></div></article>'}).join('');
+    }
+  }
+});
+Promise.all([get('articles.json'),get('site.json')]).then(function(res){
+  if(Array.isArray(res[0])&&res[0].some(function(a){return a.status==='published'}))return;
+  var site=res[1]; if(!site||!Array.isArray(site.sections))return;
+  var ns=null; site.sections.forEach(function(s){if(s.type==='news')ns=s});
+  if(!ns||!(ns.items||[]).length)return;
+  var arr=ns.items.map(function(it){return {cat:'info',tag:'お知らせ',date:it.label||'',title:it.text||'',body:''}});
+  if(window.__setNews)window.__setNews(arr);
+});
+})();
 </script>
 </body>
 </html>
