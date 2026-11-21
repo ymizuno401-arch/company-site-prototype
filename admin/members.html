@@ -136,7 +136,11 @@ function renderEditor(){const ed=document.getElementById('editor');const m=get()
  const _mb=ed.querySelector('#mBackBtn');if(_mb)_mb.onclick=()=>{document.getElementById('listTabs').scrollIntoView({behavior:'smooth'})};
  const _mp=ed.querySelector('#mPreviewBtn');if(_mp)_mp.onclick=()=>{document.getElementById('preview').scrollIntoView({behavior:'smooth'})};
 
-function _ghAuto(){try{var s=JSON.parse(localStorage.getItem('companySiteGitHubV1')||'{}');if(!s.token){var _m=document.querySelector('#saveMsg,#mSaveMsg');if(_m)_m.textContent=_m.textContent+' ／ ⚠ GitHub未接続のため、サイトにはまだ反映されません（運用者用パネルでトークンを設定してください）';return}var b=document.getElementById('ghSave');if(!b)return;b.click();var tries=0;var iv=setInterval(function(){tries++;var st=document.getElementById('ghStatus');var msgEl=document.querySelector('#saveMsg,#mSaveMsg');if(st&&msgEl&&/保存しました|失敗|できません|エラー|権限|トークン/.test(st.textContent)){if(/保存しました/.test(st.textContent)){msgEl.textContent=msgEl.textContent+' ／ GitHubへも保存しました'}else{msgEl.textContent=msgEl.textContent+' ／ GitHub保存に失敗（運用者用パネルを確認）'}clearInterval(iv)}if(tries>25)clearInterval(iv)},700)}catch(e){}}
+function _ghAuto(){try{var s=JSON.parse(localStorage.getItem('companySiteGitHubV1')||'{}');var msgEl=document.querySelector('#saveMsg,#mSaveMsg');
+ if(location.protocol==='file:'){if(msgEl)msgEl.textContent+=' ／ ⚠ この画面（ファイル）からは公開できません。編集ページのURLで開いてください';return}
+ if(!s.token){if(msgEl)msgEl.textContent+=' ／ ⚠ まだサイトに出ていません：初回のみ、下の「運用者用」欄にトークンを貼ってから保存し直してください';var o=document.getElementById('ghOwner');if(o){var d=o.closest('details');if(d)d.open=true;try{o.scrollIntoView({behavior:'smooth',block:'center'})}catch(_e){}}return}
+ var b=document.getElementById('ghSave');if(!b)return;b.click();if(msgEl)msgEl.textContent+=' ／ GitHubへ送信中…';
+ var tries=0;var iv=setInterval(function(){tries++;var st=document.getElementById('ghStatus');if(st&&/保存しました|失敗|できません|エラー|権限/.test(st.textContent)){if(msgEl){if(/保存しました/.test(st.textContent)){msgEl.textContent=msgEl.textContent.replace('GitHubへ送信中…','GitHubへ保存しました（サイトに反映されます）')}else{msgEl.textContent+=' ／ GitHub保存に失敗しました';alert('GitHubへの保存に失敗しました。運用者用パネルに理由が出ています')}}clearInterval(iv)}if(tries>25)clearInterval(iv)},700)}catch(e){}}
  function _mSave(st){m.status=st;save();renderList();renderEditor();_ghAuto();const mm=document.querySelector('#mSaveMsg');if(mm){const d=new Date();mm.textContent='保存しました（'+(st==='published'?'公開':'下書き')+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
  const _md=ed.querySelector('#mSaveDraft');if(_md)_md.onclick=()=>_mSave('draft');
  const _mpb=ed.querySelector('#mSavePub');if(_mpb)_mpb.onclick=()=>_mSave('published');
@@ -239,4 +243,5 @@ $('ghSave').addEventListener('click',function(){
 });
 })();
 </script>
+<script>/*fileBanner*/if(location.protocol==='file:'){var b=document.createElement('div');b.style.cssText='background:#b91c1c;color:#fff;padding:10px 14px;font-size:14px;text-align:center';b.innerHTML='この画面（ファイル）からはサイトに公開できません。編集は <a href="https://ymizuno401-arch.github.io/company-site-prototype/admin/members.html" style="color:#fff;text-decoration:underline">編集ページのURL</a> で開いてください';document.body.prepend(b)}</script>
 </body></html>
