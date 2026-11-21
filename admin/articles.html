@@ -110,7 +110,7 @@ const KEY='companySiteArticlesV1';const uid=()=>Math.random().toString(36).slice
 const roleName={subject:'話し手',interviewer:'聞き手',photographer:'撮影',writer:'文'};
 function sanitizeSlug(s){return String(s||'').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9-_]/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'')}
 function autoSlug(a){return sanitizeSlug(a.cat+'-'+String(a.date||'').replace(/-/g,'')+'-'+a.id.slice(0,4))}
-const blank=()=>({id:uid(),status:'draft',cat:'info',date:new Date().toISOString().slice(0,10),title:'',slug:'',credits:[],blocks:[],summary:'',seoTitle:'',description:'',keyPoints:'',thumb:'',body:'<p>本文をここに書きます。</p>'});
+const blank=()=>({id:uid(),status:'draft',cat:'info',date:new Date().toISOString().slice(0,10),title:'',slug:'',publishAt:'',credits:[],blocks:[],summary:'',seoTitle:'',description:'',keyPoints:'',thumb:'',body:'<p>本文をここに書きます。</p>'});
 function articleUrl(a){return 'https://ymizuno401-arch.github.io/company-site-prototype/news/'+(a.slug||autoSlug(a))+'/'}
 const blockName={image:'画像',video:'動画',youtube:'YouTube',book:'商品・書籍',event:'イベント情報'};
 const palette=['#17211c','#b03060','#1d6fb8','#1e7d4f','#7a3ea8','#c26a00','#0e7c86','#b00020','#4c2a85','#8a6d1f'];
@@ -160,11 +160,11 @@ function keyPointsHtml(a){const pts=(a.keyPoints||'').split('\n').map(s=>s.trim(
 function buildPreviewHtml(a){return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="'+esc(a.description||a.summary||'')+'"><title>'+esc(a.seoTitle||a.title)+'</title><script type="application/ld+json">'+JSON.stringify(jsonLd(a))+'<\/script><style>body{font-family:sans-serif;max-width:800px;margin:0 auto;padding:24px 16px;line-height:1.9;color:#17211c}h1{line-height:1.5}.meta{color:#777}blockquote{border-left:3px solid #c96f8d;margin:12px 0;padding:4px 12px;background:#fbfaf7}.banner{background:#211336;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px}</style></head><body><p class="banner">確認用ページです。一般公開はされていません。内容の転載・転送はお控えください。</p><p class="meta">'+esc(a.date)+'｜'+catName[a.cat]+'</p>'+(creditsText(a)?'<p class="meta">'+esc(creditsText(a))+'</p>':'')+'<h1>'+esc(a.title)+'</h1><p>'+esc(a.summary)+'</p>'+keyPointsHtml(a)+'<hr>'+(a.body||'')+blocksHtml(a)+relatedHtml(a)+'</body></html>'}
 function renderList(){
  const tabsEl=document.getElementById('listTabs');
- if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['review','確認依頼'],['published','公開']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?arts.length:arts.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(listFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{listFilter=b.dataset.f;renderList()});}
+ if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['review','確認依頼'],['scheduled','予約'],['published','公開']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?arts.length:arts.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(listFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{listFilter=b.dataset.f;renderList()});}
  const box=document.getElementById('list');box.innerHTML='';
  [...arts].sort((a,b)=>b.date.localeCompare(a.date)).filter(a=>listFilter==='all'||a.status===listFilter).forEach(a=>{
   const b=document.createElement('button');b.className='art'+(a.id===cur?' on':'');
-  b.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="badge ${a.status!=='published'?'draft':''}">${a.status==='draft'?'下書き':a.status==='review'?'確認依頼':'公開'}</span> <span>${esc(a.date)}</span><b>${esc(a.title||'（無題）')}</b><span>${esc(creditsText(a))}</span>`;
+  b.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="badge ${a.status!=='published'?'draft':''}">${a.status==='draft'?'下書き':a.status==='review'?'確認依頼':a.status==='scheduled'?('予約 '+(a.publishAt?esc(a.publishAt.replace('T',' ').slice(5)):'日時未設定')):'公開'}</span> <span>${esc(a.date)}</span><b>${esc(a.title||'（無題）')}</b><span>${esc(creditsText(a))}</span>`;
   b.onclick=()=>{cur=a.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)goEditor(false)};box.appendChild(b);
  });
 }
@@ -176,6 +176,7 @@ function renderEditor(){
  <button type="button" id="backListBtn">← 一覧</button>
  <button type="button" id="saveDraftBtn">下書きとして保存</button>
  <button type="button" id="saveReviewBtn">確認依頼として保存</button>
+ <button type="button" id="saveSchedBtn">予約して保存</button>
  <button type="button" class="primary" id="savePubBtn">公開して保存</button>
  <button type="button" id="toPreviewBtn">プレビューを見る</button>
  <a href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/#news" target="_blank" rel="noopener" style="font-size:13px">サイトで確認 ↗</a>
@@ -189,7 +190,8 @@ function renderEditor(){
  <div class="grid2"><div><label>カテゴリ</label><select data-k="cat">
   ${Object.entries(catName).map(([k,v])=>`<option value="${k}" ${a.cat===k?'selected':''}>${v}</option>`).join('')}</select></div>
  <div><label>日付</label><input type="date" data-k="date" value="${esc(a.date)}"></div></div>
- <div><label>状態</label><select data-k="status"><option value="draft" ${a.status==='draft'?'selected':''}>下書き</option><option value="review" ${a.status==='review'?'selected':''}>確認依頼</option><option value="published" ${a.status==='published'?'selected':''}>公開</option></select></div>
+ <div class="grid2"><div><label>状態</label><select data-k="status"><option value="draft" ${a.status==='draft'?'selected':''}>下書き</option><option value="review" ${a.status==='review'?'selected':''}>確認依頼</option><option value="scheduled" ${a.status==='scheduled'?'selected':''}>予約</option><option value="published" ${a.status==='published'?'selected':''}>公開</option></select></div>
+ <div><label>予約日時</label><input type="datetime-local" data-k="publishAt" value="${esc(a.publishAt||'')}"></div></div>
  <details class="drawer" id="credDrawer"><summary>関係者クレジット <span class="cnt">（話し手＝インタビュー対象者／聞き手／撮影／文。何人でも追加できます）</span></summary>
  <div id="credits"></div>
  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
@@ -298,9 +300,10 @@ function renderEditor(){
  const _bl=ed.querySelector('#backListBtn');if(_bl)_bl.onclick=()=>{document.getElementById('listTabs').scrollIntoView({behavior:'smooth'})};
  const _tp=ed.querySelector('#toPreviewBtn');if(_tp)_tp.onclick=()=>{document.getElementById('preview').scrollIntoView({behavior:'smooth'})};
  function _afterSave(label){const m2=document.querySelector('#saveMsg');if(m2){const d=new Date();m2.textContent='保存しました（'+label+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
- function _doSave(st){a.status=st;if(st==='published'){if(!a.slug)a.slug=autoSlug(a);if(a.previewToken){delete a.previewToken;delete a.previewIssuedAt;setTimeout(()=>alert('公開にしたので、確認用URLは自動で取り消しました。公開側に置いた確認用ファイルも消してください。'),60)}}save();renderList();renderEditor();_afterSave(st==='draft'?'下書き':st==='review'?'確認依頼':'公開')}
+ function _doSave(st){if(st==='scheduled'&&!a.publishAt){alert('予約日時を入れてください');const pf=ed.querySelector('[data-k="publishAt"]');if(pf){pf.scrollIntoView({behavior:'smooth'});pf.focus()}return}a.status=st;if(st==='published'){if(!a.slug)a.slug=autoSlug(a);if(a.previewToken){delete a.previewToken;delete a.previewIssuedAt;setTimeout(()=>alert('公開にしたので、確認用URLは自動で取り消しました。公開側に置いた確認用ファイルも消してください。'),60)}}save();renderList();renderEditor();_afterSave(st==='draft'?'下書き':st==='review'?'確認依頼':st==='scheduled'?'予約':'公開')}
  const _bd=ed.querySelector('#saveDraftBtn');if(_bd)_bd.onclick=()=>_doSave('draft');
  const _br=ed.querySelector('#saveReviewBtn');if(_br)_br.onclick=()=>_doSave('review');
+ const _bs=ed.querySelector('#saveSchedBtn');if(_bs){_bs.onclick=()=>_doSave('scheduled');if(!canPublish()){_bs.disabled=true;_bs.style.opacity=.5}}
  const _bp=ed.querySelector('#savePubBtn');if(_bp){_bp.onclick=()=>_doSave('published');if(!canPublish()){_bp.disabled=true;_bp.style.opacity=.5}}
  // role enforcement (prototype)
  const stSel=ed.querySelector('[data-k="status"]');
@@ -312,7 +315,7 @@ function renderEditor(){
 }
 function renderPreview(){
  const a=get();const pv=document.getElementById('preview');if(!a){pv.innerHTML='';return}
- pv.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="meta">${esc(a.date)} ${a.status==='draft'?'・下書き':''}</span>
+ pv.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="meta">${esc(a.date)} ${a.status==='draft'?'・下書き':a.status==='scheduled'?('・予約 '+(a.publishAt?esc(a.publishAt.replace('T',' ')):'')):''}</span>
  <h1>${esc(a.title||'（無題）')}</h1>${creditsText(a)?`<p class="meta">${esc(creditsText(a))}</p>`:''}
  ${a.thumb?`<img src="${esc(a.thumb)}" alt="サムネイル" style="width:100%;border-radius:10px">`:`<div class="frame">サムネイル<br>推奨 960 × 540</div>`}
  <p>${esc(a.summary)}</p>${(a.keyPoints||'').split('\n').filter(Boolean).length?`<div style="border:1px solid #d9d7cd;border-radius:10px;padding:10px 14px"><b>要点</b><ul>${(a.keyPoints||'').split('\n').filter(Boolean).map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`:''}<p class="meta" style="margin-top:10px">公開URL：${esc(articleUrl(a))}</p><hr><div class="content">${a.body||''}</div><div>${blocksHtml(a)}</div><div>${relatedHtml(a)}</div>`;
