@@ -107,6 +107,13 @@ main{max-width:none!important;margin:0!important}
  .admin-side a{padding:8px 12px;font-size:13.5px}
  .admin-side .foot{display:none}
 }
+
+#body{border:1.5px solid #cfc9ba!important;background:#fff;padding:18px 20px}
+#body:focus{outline:2px solid rgba(12,59,46,.4);outline-offset:1px}
+.edtabs{display:flex;gap:8px;padding:12px 14px 6px;position:sticky;top:0;background:#fff;z-index:5;border-bottom:1px solid var(--line)}
+.edtabs button{padding:9px 22px;font-size:14.5px}
+.edtabs button.on{background:var(--green);color:#fff;border-color:var(--green)}
+#pvWrap{padding:8px 16px 16px}
 </style>
 <meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
@@ -586,7 +593,32 @@ if(det){
   document.body.insertBefore(aside, document.body.firstChild);
   /* ---- resizable panes with own scrollbars (desktop) ---- */
   var DEFAULTS={articles:[300,null,380],members:[260,null,400],site:[520,null]};
-  var defs=DEFAULTS[page]; if(!defs) return;
+    if(page==='articles'){
+    var layout0=document.querySelector('.layout');
+    if(layout0){
+      var cols0=[].filter.call(layout0.children,function(el){return el.classList&&el.classList.contains('col')});
+      if(cols0.length===3){
+        var edCol=cols0[1], pvCol=cols0[2];
+        var tabbar=document.createElement('div'); tabbar.className='edtabs';
+        tabbar.innerHTML='<button type="button" class="on" data-tab="edit">編集</button><button type="button" data-tab="pv">プレビュー</button>';
+        var pvWrap=document.createElement('div'); pvWrap.id='pvWrap'; pvWrap.style.display='none';
+        while(pvCol.firstChild) pvWrap.appendChild(pvCol.firstChild);
+        edCol.appendChild(pvWrap); edCol.insertBefore(tabbar, edCol.firstChild);
+        pvCol.remove();
+        DEFAULTS.articles=[300,null];
+        window.__setTab=function(which){
+          var ed=document.getElementById('editor');
+          if(ed) ed.style.display=(which==='pv')?'none':'';
+          pvWrap.style.display=(which==='pv')?'':'none';
+          [].forEach.call(tabbar.querySelectorAll('button'),function(b){b.classList.toggle('on', b.getAttribute('data-tab')===which)});
+          edCol.scrollTop=0;
+        };
+        tabbar.addEventListener('click',function(e){var b=e.target.closest?e.target.closest('button[data-tab]'):null; if(b) window.__setTab(b.getAttribute('data-tab'))});
+        document.addEventListener('click',function(e){if(e.target&&e.target.id==='toPreviewBtn'){e.stopPropagation();e.preventDefault();window.__setTab('pv')}},true);
+      }
+    }
+  }
+var defs=DEFAULTS[page]; if(!defs) return;
   var container=document.querySelector('.layout')||document.querySelector('main');
   var mainEl=document.querySelector('main'); if(mainEl&&document.querySelector('.layout')) mainEl.classList.add('has-layout');
   if(!container) return;
