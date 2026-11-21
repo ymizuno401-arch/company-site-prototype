@@ -285,6 +285,10 @@ header.site.scrolled .site-inner{padding:7px 0}
 header.site .site-inner{transition:padding .3s ease}
 .news-card{transition:opacity .4s ease}
 @media (prefers-reduced-motion: reduce){.hero-kicker,.hero h1,.hero-lead,.hero-grid{animation:none}.reveal{opacity:1;transform:none;transition:none}.xfade>.frame{transition:none}}
+
+#toTop{position:fixed;right:16px;bottom:16px;z-index:900;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--green-900);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(10,46,35,.18);opacity:0;pointer-events:none;transition:opacity .25s}
+#toTop.show{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion: reduce){#toTop{transition:none}}
 </style>
 </head>
 <body>
@@ -677,6 +681,10 @@ window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
  // header shrink
  var hd=document.querySelector('header.site');window.addEventListener('scroll',function(){hd.classList.toggle('scrolled',window.scrollY>40)},{passive:true});
 })();
+</script>
+<button id="toTop" type="button" aria-label="ページの先頭へ戻る" title="先頭へ戻る">△</button>
+<script>
+(function(){var b=document.getElementById("toTop");function on(){if(window.scrollY>400){b.classList.add("show")}else{b.classList.remove("show")}}window.addEventListener("scroll",on,{passive:true});on();b.addEventListener("click",function(){var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;window.scrollTo({top:0,behavior:r?"auto":"smooth"})});})();
 </script>
 </body>
 </html>
