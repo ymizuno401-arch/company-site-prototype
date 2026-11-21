@@ -420,7 +420,7 @@ if(det){
   var defs=DEFAULTS[page]; if(!defs) return;
   var container=document.querySelector('.layout')||document.querySelector('main');
   if(!container) return;
-  var panes=[].filter.call(container.children,function(el){return /(col|panel|editor|preview)/.test(el.className||'')});
+  var panes=[].filter.call(container.children,function(el){var cl=el.classList;return cl&&(cl.contains('col')||cl.contains('panel')||cl.contains('editor')||cl.contains('preview'))});
   if(panes.length!==defs.length) return;
   var saved=null; try{saved=JSON.parse(localStorage.getItem('adminCols_'+page))}catch(e){}
   panes.forEach(function(p,i){
