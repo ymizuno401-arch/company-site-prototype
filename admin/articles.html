@@ -33,6 +33,15 @@ label{font-size:12px;font-weight:800;color:#4a5750;display:block;margin:12px 0 4
 .badge.pub{background:#0c3b2e;color:#fff}.badge.sch{background:#1d6fb8;color:#fff}.badge.rev{background:#c26a00;color:#fff}
 details:has(#ghOwner){opacity:.75}
 details:has(#ghOwner) summary{font-size:13px}
+
+/* mobile: compact bottom bar + toast message */
+@media (max-width:720px){
+ .savebar{position:fixed!important;top:auto!important;bottom:0;left:0;right:0;flex-wrap:nowrap!important;overflow-x:auto;padding:8px 10px!important;box-shadow:0 -4px 16px rgba(0,0,0,.14);z-index:60;border-bottom:none!important;border-top:1.5px solid #0c3b2e}
+ .savebar button,.savebar a{flex:0 0 auto;font-size:13.5px!important;padding:8px 12px!important}
+ .savebar #savePubBtn,.savebar #mSavePub{font-size:14.5px!important;padding:9px 18px!important}
+ .savebar #saveMsg:not(:empty),.savebar #mSaveMsg:not(:empty){position:fixed;left:8px;right:8px;bottom:60px;background:#0c3b2e;color:#fff!important;padding:8px 12px;border-radius:8px;font-size:12.5px;z-index:61;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+ body{padding-bottom:64px}
+}
 </style><meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
 <div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -179,7 +188,7 @@ function renderEditor(){
  const a=get();const ed=document.getElementById('editor');
  if(!a){ed.innerHTML='<p class="note">記事がありません。新規記事を押してください。</p>';return}
  ed.innerHTML=`
- <div style="position:sticky;top:0;z-index:30;background:#fff;padding:10px 0;border-bottom:1.5px solid #0c3b2e;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+ <div class="savebar" style="position:sticky;top:0;z-index:30;background:#fff;padding:10px 0;border-bottom:1.5px solid #0c3b2e;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
  <button type="button" id="backListBtn">← 一覧</button>
  <button type="button" id="saveDraftBtn">下書き保存</button>
  <button type="button" id="saveReviewBtn">確認に出す</button>
@@ -379,7 +388,7 @@ $('ghTest').addEventListener('click',function(){
   api(s,'').then(function(res){ if(!res.ok){status('接続できません：'+errText(res),false); return null} return res.json() }).then(function(j){ if(j) status('接続できました：'+j.full_name+'（このトークンで書き込み可否は「保存する」で最終確認できます）',true) }).catch(function(e){ status('通信に失敗しました。ネット接続を確認してください。',false) });
 });
 function getFile(s){
-  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)).then(function(res){
+  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)+'&t='+Date.now(),{cache:'no-store'}).then(function(res){
     if(res.status===404) return null;
     if(!res.ok) throw new Error(errText(res));
     return res.json();
@@ -401,14 +410,18 @@ $('ghLoad').addEventListener('click',function(){
 $('ghSave').addEventListener('click',function(){
   var s=needSettings(); if(!s)return; status('GitHubへ保存しています…');
   var payload; try{ payload=JSON.stringify(CFG.getData(),null,2) }catch(e){ status('保存するデータの取り出しに失敗しました。',false); return }
-  getFile(s).then(function(f){
-    var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
-    if(f&&f.sha) body.sha=f.sha;
-    return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  }).then(function(res){
-    if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
-    status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
-  }).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
+  function attempt(retried){
+    return getFile(s).then(function(f){
+      var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
+      if(f&&f.sha) body.sha=f.sha;
+      return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    }).then(function(res){
+      if(!res.ok&&(res.status===409||res.status===422)&&!retried){ return attempt(true) }
+      if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
+      status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+    });
+  }
+  attempt(false).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
 });
 })();
 </script>

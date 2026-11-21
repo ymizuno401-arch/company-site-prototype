@@ -235,7 +235,7 @@ $('ghTest').addEventListener('click',function(){
   api(s,'').then(function(res){ if(!res.ok){status('接続できません：'+errText(res),false); return null} return res.json() }).then(function(j){ if(j) status('接続できました：'+j.full_name+'（このトークンで書き込み可否は「保存する」で最終確認できます）',true) }).catch(function(e){ status('通信に失敗しました。ネット接続を確認してください。',false) });
 });
 function getFile(s){
-  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)).then(function(res){
+  return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/')+'?ref='+encodeURIComponent(s.branch)+'&t='+Date.now(),{cache:'no-store'}).then(function(res){
     if(res.status===404) return null;
     if(!res.ok) throw new Error(errText(res));
     return res.json();
@@ -257,14 +257,18 @@ $('ghLoad').addEventListener('click',function(){
 $('ghSave').addEventListener('click',function(){
   var s=needSettings(); if(!s)return; status('GitHubへ保存しています…');
   var payload; try{ payload=JSON.stringify(CFG.getData(),null,2) }catch(e){ status('保存するデータの取り出しに失敗しました。',false); return }
-  getFile(s).then(function(f){
-    var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
-    if(f&&f.sha) body.sha=f.sha;
-    return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  }).then(function(res){
-    if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
-    status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
-  }).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
+  function attempt(retried){
+    return getFile(s).then(function(f){
+      var body={message:'更新アプリから保存（'+CFG.label+'）',content:b64enc(payload),branch:s.branch};
+      if(f&&f.sha) body.sha=f.sha;
+      return api(s,'/contents/'+s.path.split('/').map(encodeURIComponent).join('/'),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    }).then(function(res){
+      if(!res.ok&&(res.status===409||res.status===422)&&!retried){ return attempt(true) }
+      if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
+      status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+    });
+  }
+  attempt(false).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
 });
 })();
 </script>
