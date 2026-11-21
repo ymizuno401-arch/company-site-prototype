@@ -41,6 +41,16 @@ textarea{min-height:64px}label{font-size:12px;font-weight:800;color:#4a5750;disp
 .badge.pub{background:#0c3b2e;color:#fff}.badge.sch{background:#1d6fb8;color:#fff}.badge.rev{background:#c26a00;color:#fff}
 details:has(#ghOwner){opacity:.75}
 details:has(#ghOwner) summary{font-size:13px}
+
+/* mobile-first structure */
+@media (max-width:720px){
+ input,select,textarea{font-size:16px!important}
+ .grid2{grid-template-columns:1fr!important}
+ .toolbar button{min-height:40px;padding:8px 10px!important}
+ button.small{min-height:38px}
+ h1{font-size:20px}
+ #editor input[data-k="title"]{font-size:17px;font-weight:600;padding:12px}
+}
 </style><meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
 <div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">

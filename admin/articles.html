@@ -42,6 +42,16 @@ details:has(#ghOwner) summary{font-size:13px}
  .savebar #saveMsg:not(:empty),.savebar #mSaveMsg:not(:empty){position:fixed;left:8px;right:8px;bottom:60px;background:#0c3b2e;color:#fff!important;padding:8px 12px;border-radius:8px;font-size:12.5px;z-index:61;box-shadow:0 6px 18px rgba(0,0,0,.25)}
  body{padding-bottom:64px}
 }
+
+/* mobile-first structure */
+@media (max-width:720px){
+ input,select,textarea{font-size:16px!important}
+ .grid2{grid-template-columns:1fr!important}
+ .toolbar button{min-height:40px;padding:8px 10px!important}
+ button.small{min-height:38px}
+ h1{font-size:20px}
+ #editor input[data-k="title"]{font-size:17px;font-weight:600;padding:12px}
+}
 </style><meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
 <div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -200,9 +210,11 @@ function renderEditor(){
  </div>
  <h2 style="margin:10px 0 4px;font-size:18px">記事を編集</h2>
  <label>タイトル</label><input data-k="title" value="${esc(a.title)}" placeholder="記事タイトル">
+ <details class="drawer"><summary>詳細設定（URL・公開リンク）</summary>
  <label>パーマリンク（URLの末尾／英小文字・数字・ハイフンだけ）</label>
  <div style="display:flex;gap:8px;align-items:center"><span style="font-size:12px;color:#777;white-space:nowrap">…/news/</span><input id="slugInput" value="${esc(a.slug||'')}" placeholder="例：interview-20261110-member-a"><button class="small" id="slugAuto">自動で作る</button></div>
  <p class="note" id="slugMsg">英小文字・数字・ハイフンだけ。空欄なら公開時に自動生成します。</p>
+ </details>
  <div class="grid2"><div><label>カテゴリ</label><select data-k="cat">
   ${Object.entries(catName).map(([k,v])=>`<option value="${k}" ${a.cat===k?'selected':''}>${v}</option>`).join('')}</select></div>
  <div><label>日付</label><input type="date" data-k="date" value="${esc(a.date)}"></div></div>
