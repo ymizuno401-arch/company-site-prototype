@@ -71,7 +71,7 @@ textarea{min-height:64px}label{font-size:12px;font-weight:800;color:#4a5750;disp
 <button id="exportJson">JSON書き出し</button>
 <button id="importBtn">JSON読み込み</button><input id="importFile" type="file" accept=".json" hidden>
 <button id="exportHtml" class="primary">サイトHTML書き出し</button>
-<button id="resetBtn">初期状態に戻す</button></header>
+<button id="saveNow">保存する</button><span id="saveMsg" style="font-size:12px;font-weight:700"></span><a href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/" target="_blank" rel="noopener" style="font-size:12.5px;color:#fff">サイトで確認 ↗</a><button id="resetBtn">初期状態に戻す</button></header>
 <details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
 <summary style="font-weight:800;cursor:pointer;color:#0c3b2e">運用者用：GitHub接続設定（使用感の確認では開く必要はありません）</summary>
 <div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
@@ -92,7 +92,7 @@ textarea{min-height:64px}label{font-size:12px;font-weight:800;color:#4a5750;disp
 
 <div class="layout">
 <div class="editor">
-<p class="note" style="padding:0">使い方：セクション（塊）は追加・削除・上下移動・表示ON/OFFができます。中身の要素（お知らせ1件、メンバー1人、事業1行など）も同じです。新しく足せるセクションは下のボタンから選べます。</p>
+<p class="note" style="padding:0">セクションと中身は、追加・削除・並べ替え・表示ON/OFFができます。入力すると自動保存されます。</p>
 <div id="sections"></div>
 <div class="addbar"><span style="font-weight:800;font-size:13px">＋ セクションを追加：</span>
 <button class="small" data-addsec="text">自由テキスト</button>
@@ -103,7 +103,6 @@ textarea{min-height:64px}label{font-size:12px;font-weight:800;color:#4a5750;disp
 <button class="small" data-addsec="partners">提携先</button>
 <button class="small" data-addsec="image">画像枠</button>
 </div>
-<p class="note" style="padding:0">GitHub接続（テスト環境）は上の「GitHub接続」パネルから使えます。未接続のときは、これまでどおり「書き出し」したファイルを公開側に置く形です。</p>
 </div>
 <div class="preview"><div id="preview" class="pv"></div></div>
 </div>
@@ -179,6 +178,7 @@ document.getElementById('exportJson').onclick=()=>download('site-data.json',JSON
 document.getElementById('exportHtml').onclick=()=>{const pv=document.getElementById('preview').innerHTML;download('index-updated.html','<!doctype html><html lang="ja"><meta charset="utf-8"><title>会社サイト</title><body style="margin:0;font-family:sans-serif">'+pv+'</body></html>','text/html')};
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
 document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{let d;try{d=JSON.parse(t)}catch(err){alert('JSONとして読めませんでした。取り込みは中止しました（今のデータはそのままです）。');return}if(!d||typeof d!=='object'||!Array.isArray(d.sections)){alert('このファイルは、この編集ページの書き出し形式ではありません。取り込みは中止しました（今のデータはそのままです）。');return}data=d;save();render();alert('読み込みました')})};
+document.getElementById('saveNow').onclick=()=>{save();const m=document.getElementById('saveMsg');const d=new Date();m.textContent='保存しました '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)};
 document.getElementById('resetBtn').onclick=()=>{if(confirm('初期状態に戻しますか？入力内容は消えます')){data=defaults();save();render()}};
 render();
 </script><button id="toTop" title="上に戻る" aria-label="上に戻る">△</button>

@@ -52,7 +52,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 })();
 </script>
 <header><h1>メンバー編集｜1人ごとの専用ページ</h1>
-<p>メンバーごとに、プロフィール・写真・動画・SNSを持つ詳細ページを編集します。一覧のカードとは別に、この内容が詳細ページになります。保存はブラウザの中だけです（Museは経由しません）。</p>
+<p>メンバーごとの詳細ページを編集します。</p>
 <p><a href="./index.html">← ページ編集</a>　｜　<a href="./articles.html">お知らせ・インタビュー記事の編集 →</a></p></header>
 <details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
 <summary style="font-weight:800;cursor:pointer;color:#0c3b2e">運用者用：GitHub接続設定（使用感の確認では開く必要はありません）</summary>
@@ -74,6 +74,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 
 <main>
 <section class="panel"><button class="primary" id="newBtn" style="width:100%">＋ 新規メンバー</button>
+<div id="listTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0"></div>
 <div id="list"></div>
 <div style="margin-top:14px;display:grid;gap:8px"><button id="exportJson">JSONで書き出す</button><button id="exportHtml">詳細ページHTMLを書き出す</button></div>
 <p class="note">詳細ページのURLは …/members/＜パーマリンク＞/ になります。</p></section>
@@ -94,14 +95,23 @@ const blank=()=>({id:uid(),status:'draft',name:'',role:'VOICE ACTOR',slug:'',cat
 function defaults(){return [{...blank(),id:uid(),status:'published',name:'メンバー A',role:'VOICE ACTOR',slug:'member-a',catch:'アニメ・ゲーム出演／ナレーション',profile:'プロフィール文は確定後に掲載します。',works:'出演作A\n出演作B'}]}
 let members;try{members=JSON.parse(safeGet(KEY))||defaults()}catch(e){members=defaults()}
 members.forEach(m=>{if(!Array.isArray(m.sns)){m.sns=[{name:'X',url:m.x||''},{name:'Instagram',url:m.instagram||''},{name:'YouTube',url:m.youtube||''},{name:'TikTok',url:''}]}delete m.x;delete m.instagram;delete m.youtube;if(!Array.isArray(m.gallery))m.gallery=[]});
-let cur=members[0]?.id;
+let cur=members[0]?.id;let mFilter='all';
 const get=()=>members.find(m=>m.id===cur);
 function save(){safeSet(KEY,JSON.stringify(members));renderList();renderPreview()}
 function memberUrl(m){return 'https://ymizuno401-arch.github.io/company-site-prototype/members/'+(m.slug||sanitize(m.name)||m.id)+'/'}
-function renderList(){const box=document.getElementById('list');box.innerHTML='';[...members].forEach(m=>{const b=document.createElement('button');b.className='mi'+(m.id===cur?' on':'');b.innerHTML=`<b>${esc(m.name||'（名前未設定）')}</b><br><span style="font-size:11px;color:#666">${esc(m.role)}｜${m.status==='published'?'公開':'下書き'}</span>`;b.onclick=()=>{cur=m.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.appendChild(b)})}
+function renderList(){const tabsEl=document.getElementById('listTabs');if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['published','公開']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?members.length:members.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(mFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{mFilter=b.dataset.f;renderList()});}
+const box=document.getElementById('list');box.innerHTML='';[...members].filter(m=>mFilter==='all'||m.status===mFilter).forEach(m=>{const b=document.createElement('button');b.className='mi'+(m.id===cur?' on':'');b.innerHTML=`<b>${esc(m.name||'（名前未設定）')}</b><br><span style="font-size:11px;color:#666">${esc(m.role)}｜${m.status==='published'?'公開':'下書き'}</span>`;b.onclick=()=>{cur=m.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.appendChild(b)})}
 function renderEditor(){const ed=document.getElementById('editor');const m=get();if(!m){ed.innerHTML='<p class="note">メンバーがいません</p>';return}
  ed.innerHTML=`
- <h2 style="margin:0;font-size:17px">メンバーを編集</h2>
+ <div style="position:sticky;top:0;z-index:30;background:#fff;padding:10px 0;border-bottom:1.5px solid #0c3b2e;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+ <button type="button" id="mBackBtn">← 一覧</button>
+ <button type="button" id="mSaveDraft">下書きとして保存</button>
+ <button type="button" class="primary" id="mSavePub">公開して保存</button>
+ <button type="button" id="mPreviewBtn">プレビューを見る</button>
+ <a href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/#members" target="_blank" rel="noopener" style="font-size:13px">サイトで確認 ↗</a>
+ <span id="mSaveMsg" style="font-size:12.5px;color:#0c3b2e;font-weight:700"></span>
+ </div>
+ <h2 style="margin:10px 0 0;font-size:17px">メンバーを編集</h2>
  <label>名前</label><input data-k="name" value="${esc(m.name)}" placeholder="メンバー名">
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>肩書き（英字）</label><input data-k="role" value="${esc(m.role)}" placeholder="VOICE ACTOR / COSPLAYER"></div>
  <div><label>状態</label><select data-k="status"><option value="draft" ${m.status==='draft'?'selected':''}>下書き</option><option value="published" ${m.status==='published'?'selected':''}>公開</option></select></div></div>
@@ -120,9 +130,14 @@ function renderEditor(){const ed=document.getElementById('editor');const m=get()
  <div style="display:flex;gap:8px;align-items:center"><input type="file" id="vidFile" accept="video/mp4,video/webm" style="display:none"><button class="small" id="vidUp">動画をアップロード</button>${m.videoData?'<span class="note">アップロード済み</span><button class="small danger" id="vidDel">外す</button>':''}</div>
  <label>SNS・外部サイトのリンク（追加できます）</label><div id="snsBox"></div>
  <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="small" data-addsns="X">＋ X</button><button class="small" data-addsns="Instagram">＋ Instagram</button><button class="small" data-addsns="YouTube">＋ YouTube</button><button class="small" data-addsns="TikTok">＋ TikTok</button><button class="small" data-addsns="">＋ 自由に追加（海外サイトなど）</button></div>
- <p class="note">最初から X／Instagram／YouTube／TikTok が入っています。海外の配信サイトや本人のサイトなどは「自由に追加」で、名前とURLの組をいくつでも足せます。</p>
+ <p class="note">「自由に追加」で、名前とURLの組をいくつでも足せます。</p>
  <div style="display:flex;gap:8px;margin-top:16px"><button id="dupBtn">複製</button><button id="delBtn" class="danger">このメンバーを削除</button></div>`;
  ed.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',e=>{let v=e.target.value;if(e.target.dataset.k==='slug')v=sanitize(v);m[e.target.dataset.k]=v;save()}));
+ const _mb=ed.querySelector('#mBackBtn');if(_mb)_mb.onclick=()=>{document.getElementById('listTabs').scrollIntoView({behavior:'smooth'})};
+ const _mp=ed.querySelector('#mPreviewBtn');if(_mp)_mp.onclick=()=>{document.getElementById('preview').scrollIntoView({behavior:'smooth'})};
+ function _mSave(st){m.status=st;save();renderList();renderEditor();const mm=document.querySelector('#mSaveMsg');if(mm){const d=new Date();mm.textContent='保存しました（'+(st==='published'?'公開':'下書き')+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
+ const _md=ed.querySelector('#mSaveDraft');if(_md)_md.onclick=()=>_mSave('draft');
+ const _mpb=ed.querySelector('#mSavePub');if(_mpb)_mpb.onclick=()=>_mSave('published');
  const pf=ed.querySelector('#portFile');ed.querySelector('#portUp').addEventListener('click',()=>pf.click());pf.addEventListener('change',async()=>{const f=pf.files[0];if(!f)return;m.portrait=await readImageFile(f,1000);save();renderEditor()});
  const pd=ed.querySelector('#portDel');if(pd)pd.addEventListener('click',()=>{m.portrait='';save();renderEditor()});
  const gal=ed.querySelector('#gal');(m.gallery||[]).forEach((g,gi)=>{const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;align-items:center;margin-top:8px';row.innerHTML=`<img src="${esc(g.src)}" style="width:64px;border-radius:6px"><input value="${esc(g.caption||'')}" placeholder="キャプション" style="flex:1"><button class="small" data-g="up">↑</button><button class="small" data-g="down">↓</button><button class="small danger" data-g="del">削除</button>`;row.querySelector('input').addEventListener('input',e=>{g.caption=e.target.value;save()});row.querySelectorAll('[data-g]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.g;if(a==='del')m.gallery.splice(gi,1);if(a==='up'&&gi>0)[m.gallery[gi-1],m.gallery[gi]]=[m.gallery[gi],m.gallery[gi-1]];if(a==='down'&&gi<m.gallery.length-1)[m.gallery[gi+1],m.gallery[gi]]=[m.gallery[gi],m.gallery[gi+1]];save();renderEditor()}));gal.appendChild(row)});

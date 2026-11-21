@@ -93,12 +93,13 @@ label{font-size:12px;font-weight:800;color:#4a5750;display:block;margin:12px 0 4
 <tr><td style="border:1px solid #ddd;padding:7px">記事の削除</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
 <tr><td style="border:1px solid #ddd;padding:7px">利用者の招待・権限の付与／変更、サイト設定、GitHub接続</td><td style="border:1px solid #ddd;padding:7px">○</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td><td style="border:1px solid #ddd;padding:7px">×</td></tr>
 </table></div>
-<p class="note">本番では、ログインした人ごとにこの権限が自動で付きます（GitHub直結時に実装）。この試作では上の切替で動きを試せます。先方（インタビュー相手）はログインなしで、確認用URLだけを見られます。</p></details></div>
+<p class="note">試作では上の切替で権限の動きを試せます。</p></details></div>
 <div class="layout">
 <div class="col">
 <button id="newBtn" class="primary" style="width:100%">＋ 新規記事</button>
 <button id="newEventBtn" style="width:100%;margin-top:8px">＋ イベントお知らせを作る</button>
 <p class="note">インタビューもお知らせも、ここでは同じ「記事」として扱います。カテゴリで分けます。</p>
+<div id="listTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0"></div>
 <div id="list"></div>
 </div>
 <div class="col" id="editor" style="background:#fff;border-left:1px solid #eee;border-right:1px solid #eee;min-height:100vh"></div>
@@ -140,7 +141,7 @@ let saveFailed=false;function safeSet(k,v){try{localStorage.setItem(k,v);saveFai
 let arts;try{arts=JSON.parse(safeGet(KEY))||defaults()}catch(e){arts=defaults()}
 arts.forEach(a=>{if(!Array.isArray(a.credits)){a.credits=a.person?[{role:'subject',name:a.person}]:[]}delete a.person;if(!Array.isArray(a.blocks))a.blocks=[]});
 function creditsText(a){return Object.keys(roleName).map(r=>{const names=(a.credits||[]).filter(c=>c.role===r&&c.name).map(c=>c.name);return names.length?roleName[r]+'：'+names.join('、'):''}).filter(Boolean).join(' ／ ')}
-let cur=arts[0]?.id;
+let cur=arts[0]?.id;let listFilter='all';
 let role=safeGet('companySiteRole')||'admin';
 const roleSel=document.getElementById('roleSel');if(roleSel){roleSel.value=role;roleSel.addEventListener('change',()=>{role=roleSel.value;safeSet('companySiteRole',role);renderEditor();alert('権限を「'+roleSel.options[roleSel.selectedIndex].text+'」に切り替えました（試作用）')})}
 function canPublish(){return role==='admin'||role==='editor'}
@@ -158,8 +159,10 @@ function previewUrl(a){return BASE+a.previewToken+'.html'}
 function keyPointsHtml(a){const pts=(a.keyPoints||'').split('\n').map(s=>s.trim()).filter(Boolean);return pts.length?'<section style="border:1px solid #d9d7cd;border-radius:10px;padding:12px 16px;margin:16px 0"><b>要点</b><ul>'+pts.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul></section>':''}
 function buildPreviewHtml(a){return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="description" content="'+esc(a.description||a.summary||'')+'"><title>'+esc(a.seoTitle||a.title)+'</title><script type="application/ld+json">'+JSON.stringify(jsonLd(a))+'<\/script><style>body{font-family:sans-serif;max-width:800px;margin:0 auto;padding:24px 16px;line-height:1.9;color:#17211c}h1{line-height:1.5}.meta{color:#777}blockquote{border-left:3px solid #c96f8d;margin:12px 0;padding:4px 12px;background:#fbfaf7}.banner{background:#211336;color:#fff;padding:10px 14px;border-radius:10px;font-size:13px}</style></head><body><p class="banner">確認用ページです。一般公開はされていません。内容の転載・転送はお控えください。</p><p class="meta">'+esc(a.date)+'｜'+catName[a.cat]+'</p>'+(creditsText(a)?'<p class="meta">'+esc(creditsText(a))+'</p>':'')+'<h1>'+esc(a.title)+'</h1><p>'+esc(a.summary)+'</p>'+keyPointsHtml(a)+'<hr>'+(a.body||'')+blocksHtml(a)+relatedHtml(a)+'</body></html>'}
 function renderList(){
+ const tabsEl=document.getElementById('listTabs');
+ if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['review','確認依頼'],['published','公開']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?arts.length:arts.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(listFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{listFilter=b.dataset.f;renderList()});}
  const box=document.getElementById('list');box.innerHTML='';
- [...arts].sort((a,b)=>b.date.localeCompare(a.date)).forEach(a=>{
+ [...arts].sort((a,b)=>b.date.localeCompare(a.date)).filter(a=>listFilter==='all'||a.status===listFilter).forEach(a=>{
   const b=document.createElement('button');b.className='art'+(a.id===cur?' on':'');
   b.innerHTML=`<span class="badge ${a.cat}">${catName[a.cat]}</span> <span class="badge ${a.status!=='published'?'draft':''}">${a.status==='draft'?'下書き':a.status==='review'?'確認依頼':'公開'}</span> <span>${esc(a.date)}</span><b>${esc(a.title||'（無題）')}</b><span>${esc(creditsText(a))}</span>`;
   b.onclick=()=>{cur=a.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)goEditor(false)};box.appendChild(b);
@@ -169,11 +172,20 @@ function renderEditor(){
  const a=get();const ed=document.getElementById('editor');
  if(!a){ed.innerHTML='<p class="note">記事がありません。新規記事を押してください。</p>';return}
  ed.innerHTML=`
- <h2 style="margin:0 0 4px;font-size:18px">記事を編集</h2><p class="note" style="margin:0">タイトルから順に入れてください。入力すると自動で保存とプレビューが更新されます。</p>
+ <div style="position:sticky;top:0;z-index:30;background:#fff;padding:10px 0;border-bottom:1.5px solid #0c3b2e;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+ <button type="button" id="backListBtn">← 一覧</button>
+ <button type="button" id="saveDraftBtn">下書きとして保存</button>
+ <button type="button" id="saveReviewBtn">確認依頼として保存</button>
+ <button type="button" class="primary" id="savePubBtn">公開して保存</button>
+ <button type="button" id="toPreviewBtn">プレビューを見る</button>
+ <a href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/#news" target="_blank" rel="noopener" style="font-size:13px">サイトで確認 ↗</a>
+ <span id="saveMsg" style="font-size:12.5px;color:#0c3b2e;font-weight:700"></span>
+ </div>
+ <h2 style="margin:10px 0 4px;font-size:18px">記事を編集</h2>
  <label>タイトル</label><input data-k="title" value="${esc(a.title)}" placeholder="記事タイトル">
  <label>パーマリンク（URLの末尾／英小文字・数字・ハイフンだけ）</label>
  <div style="display:flex;gap:8px;align-items:center"><span style="font-size:12px;color:#777;white-space:nowrap">…/news/</span><input id="slugInput" value="${esc(a.slug||'')}" placeholder="例：interview-20261110-member-a"><button class="small" id="slugAuto">自動で作る</button></div>
- <p class="note" id="slugMsg">日本語はURLに入れません（文字化け・コピペで壊れるため）。空欄なら公開時に自動生成します。他の記事と重なると警告します。</p>
+ <p class="note" id="slugMsg">英小文字・数字・ハイフンだけ。空欄なら公開時に自動生成します。</p>
  <div class="grid2"><div><label>カテゴリ</label><select data-k="cat">
   ${Object.entries(catName).map(([k,v])=>`<option value="${k}" ${a.cat===k?'selected':''}>${v}</option>`).join('')}</select></div>
  <div><label>日付</label><input type="date" data-k="date" value="${esc(a.date)}"></div></div>
@@ -183,10 +195,10 @@ function renderEditor(){
  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
  <button class="small" data-addcredit="subject">＋ 話し手（対象者）</button><button class="small" data-addcredit="interviewer">＋ 聞き手</button><button class="small" data-addcredit="photographer">＋ 撮影</button><button class="small" data-addcredit="writer">＋ 文</button>
  </div>
- <p class="note">鼎談・対談・複数人取材もこの形で入れます。ここで入れた人は、下の本文ツールバーの「話者」に色付きで出ます（名前はボールド＋色で付きます）。</p>
+ <p class="note">ここで入れた人は、本文の「話者」チップに出ます。</p>
  </details>
  <label>サムネイル画像</label><input data-k="thumb" value="${esc(String(a.thumb||'').startsWith('data:')?'（アップロード済み画像）':(a.thumb||''))}" placeholder="ファイル名／URL、または下のボタンでアップロード">
- <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><input type="file" id="thumbFile" accept="image/*" style="display:none"><button class="small primary" id="thumbUp">画像をアップロード</button><span class="note">スマホの写真フォルダからも選べます。横幅960pxに自動で縮小します</span></div>
+ <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap"><input type="file" id="thumbFile" accept="image/*" style="display:none"><button class="small primary" id="thumbUp">画像をアップロード</button><span class="note">横幅960pxに自動で縮小します</span></div>
  ${a.thumb?`<img src="${esc(a.thumb)}" alt="サムネイルのプレビュー" style="max-width:260px;border-radius:8px;margin-top:8px">`:''}
  <label>概要（一覧・カルーセルに出る短い文）</label><textarea data-k="summary" rows="2">${esc(a.summary)}</textarea>
  <label>本文（クラシック型）</label>
@@ -202,21 +214,21 @@ function renderEditor(){
  </div>
  <div id="speakerColors" style="margin-top:8px"></div>
  <div id="body" contenteditable="true">${a.body||''}</div>
- <p class="note">インタビューの型：見出し → 質問（本文）→ 答え（引用）→ 本文、の繰り返しで揃います。ブロックを積む操作はありません。</p>
+ <p class="note">型：見出し → 質問 → 答え（引用）の繰り返し。</p>
  <div style="display:flex;gap:8px;margin-top:14px"><button id="dupBtn">複製</button><button id="delBtn" class="danger">この記事を削除</button></div>
  <details class="drawer"><summary>関連ブロック <span class="cnt">（画像・動画・YouTube・書籍・イベント）</span></summary>
- <p class="note" style="margin:6px 0">画像・動画・YouTube・書籍・イベントは、種類ごとに決まったカード形式で表示されます。追加・削除・並べ替えができます。</p>
+ <p class="note" style="margin:6px 0">種類ごとのカード形式。追加・削除・並べ替えができます。</p>
  <div id="blocks"></div>
  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
  <button class="small" data-addblock="image">＋ 画像</button><button class="small" data-addblock="video">＋ 動画</button><button class="small" data-addblock="youtube">＋ YouTube</button><button class="small" data-addblock="book">＋ 商品・書籍（Amazon・楽天・Kindle）</button><button class="small" data-addblock="event">＋ イベント情報</button>
  </div></details>
  <details class="drawer"><summary>関連記事（内部リンク） <span class="cnt">（自動で選ばれます）</span></summary>
- <p class="note" style="margin:6px 0">同じカテゴリ・同じ登場人物・共通のことばが多い記事を自動で選び、記事の末尾に出します。チェックで付け外しできます。</p>
+ <p class="note" style="margin:6px 0">関連しそうな記事を自動で選びます。チェックで付け外しできます。</p>
  <div id="relatedBox"></div>
  <button class="small" id="relatedAuto" style="margin-top:8px">自動で選び直す</button>
  </details>
  <details class="drawer" style="border-color:#17604a;background:#f7fbf8"><summary>SEO・GEO対策</summary>
- <p class="note" style="margin:6px 0">SEO＝検索向け、GEO＝AI検索（ChatGPT等の引用）向けです。空欄は自動で補いますが、要点だけは人が書くのが効きます。</p>
+ <p class="note" style="margin:6px 0">SEO＝検索向け、GEO＝AI検索向け。</p>
  <label>SEOタイトル（空欄なら記事タイトルを使う）</label><input data-k="seoTitle" value="${esc(a.seoTitle||'')}" placeholder="例：メンバー A インタビュー｜声で演じる仕事">
  <label>説明文／メタディスクリプション（80〜120字目安）</label><textarea data-k="description" rows="2" placeholder="空欄なら概要を使います">${esc(a.description||'')}</textarea>
  <label>記事の要点（GEO用・1行に1点、3点まで。記事冒頭にも「要点」として出ます）</label><textarea data-k="keyPoints" rows="3" placeholder="例：&#10;メンバー Aは声優としてアニメ・ゲームに出演しています。">${esc(a.keyPoints||'')}</textarea>
@@ -224,7 +236,7 @@ function renderEditor(){
  <details style="margin-top:8px"><summary style="font-size:13px;font-weight:700;cursor:pointer">構造化データ（JSON-LD）を見る</summary><pre id="ldPreview" style="white-space:pre-wrap;font-size:11px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px"></pre></details>
  </details>
  <details class="drawer" style="border-color:#4c2a85;background:#fbf9ff"><summary>先方確認用URL（期限なし）</summary>
- <p class="note" style="margin:6px 0">ワンクリックで、推測できない文字列の確認用URLを発行します。期限は付きません。記事を「公開」にすると、この確認用URLは自動で取り消されます（公開側のファイル削除も必要）。手動で止めたいときは「取り消す」＋公開側のファイルを消すと無効になります。URLを知っている人は誰でも見られるので、転送されうる前提で使ってください。</p>
+ <p class="note" style="margin:6px 0">ワンクリックで確認用URLを発行（期限なし）。公開すると自動で取り消されます。</p>
  <label>確認用URL</label>
  <input id="pvUrl" readonly value="${a.previewToken?previewUrl(a):''}" placeholder="まだ発行していません">
  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
@@ -283,6 +295,13 @@ function renderEditor(){
  const cp=ed.querySelector('#copyBtn');if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(previewUrl(a));alert('コピーしました')}catch(e){prompt('このURLをコピーしてください',previewUrl(a))}};
  const re=ed.querySelector('#reissueBtn');if(re)re.onclick=()=>{if(confirm('URLを作り直しますか？古いファイルは公開側で消すまで古いURLも生きるので、必ず古い preview ファイルを消してください。')){a.previewToken=genToken();a.previewIssuedAt=new Date().toISOString().slice(0,10);download('preview-'+a.previewToken+'.html',buildPreviewHtml(a),'text/html');save();renderEditor()}};
  const rv=ed.querySelector('#revokeBtn');if(rv)rv.onclick=()=>{if(confirm('確認用URLを取り消しますか？公開側の preview ファイルも消してください。')){delete a.previewToken;delete a.previewIssuedAt;save();renderEditor()}};
+ const _bl=ed.querySelector('#backListBtn');if(_bl)_bl.onclick=()=>{document.getElementById('listTabs').scrollIntoView({behavior:'smooth'})};
+ const _tp=ed.querySelector('#toPreviewBtn');if(_tp)_tp.onclick=()=>{document.getElementById('preview').scrollIntoView({behavior:'smooth'})};
+ function _afterSave(label){const m2=document.querySelector('#saveMsg');if(m2){const d=new Date();m2.textContent='保存しました（'+label+'）'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}}
+ function _doSave(st){a.status=st;if(st==='published'){if(!a.slug)a.slug=autoSlug(a);if(a.previewToken){delete a.previewToken;delete a.previewIssuedAt;setTimeout(()=>alert('公開にしたので、確認用URLは自動で取り消しました。公開側に置いた確認用ファイルも消してください。'),60)}}save();renderList();renderEditor();_afterSave(st==='draft'?'下書き':st==='review'?'確認依頼':'公開')}
+ const _bd=ed.querySelector('#saveDraftBtn');if(_bd)_bd.onclick=()=>_doSave('draft');
+ const _br=ed.querySelector('#saveReviewBtn');if(_br)_br.onclick=()=>_doSave('review');
+ const _bp=ed.querySelector('#savePubBtn');if(_bp){_bp.onclick=()=>_doSave('published');if(!canPublish()){_bp.disabled=true;_bp.style.opacity=.5}}
  // role enforcement (prototype)
  const stSel=ed.querySelector('[data-k="status"]');
  if(!canPublish()&&stSel){[...stSel.options].forEach(o=>{if(o.value==='published')o.disabled=true});if(a.status==='published'){stSel.disabled=true}}
