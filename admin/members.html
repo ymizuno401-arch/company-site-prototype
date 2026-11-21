@@ -113,6 +113,18 @@ main{max-width:none!important;margin:0!important}
  .layout{align-items:stretch!important;flex:1 1 auto;min-height:0;padding:12px}
  main{align-items:stretch!important}
 }
+
+body>header{background:var(--bg)!important}
+#exportJson,#importBtn{display:none!important}
+@media(max-width:1099px){
+ body>header{position:static!important}
+ header a[href="./site.html"],header a[href="./members.html"],header a[href="./articles.html"]{display:none!important}
+ .pane-scroll{overflow:visible!important;max-height:none!important}
+ .layout{display:block!important}
+ main{display:block!important}
+ .edtabs{position:static!important}
+ .panebox{margin-bottom:14px}
+}
 </style>
 <meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
