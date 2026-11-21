@@ -275,11 +275,88 @@ $('ghSave').addEventListener('click',function(){
     }).then(function(res){
       if(!res.ok&&(res.status===409||res.status===422)&&!retried){ return attempt(true) }
       if(!res.ok){ return res.text().then(function(){ status('保存できませんでした：'+errText(res),false) }) }
-      status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
+      lsSet('ghSyncHash_'+CFG.id,hashStr(payload)); status('GitHubへ保存しました：'+s.path+'（反映は数十秒〜数分で公開側に出ます）',true);
     });
   }
   attempt(false).catch(function(e){ status('保存に失敗しました：'+e.message,false) });
 });
+
+/* ---- GitHub login (device flow) ---- */
+var LOGIN_CFG_KEY='companySiteLoginCfg', AUTH_KEY='companySiteAuthV1';
+var loginCfg={}; try{loginCfg=JSON.parse(lsGet(LOGIN_CFG_KEY))||{}}catch(e){}
+var auth={}; try{auth=JSON.parse(lsGet(AUTH_KEY))||{}}catch(e){}
+var det=$('ghOwner')?$('ghOwner').closest('details'):null;
+function saveLoginCfg(){var ci=$('ghClientId'),rl=$('ghRelay');loginCfg={clientId:ci?ci.value.trim():'',relay:rl?rl.value.trim().replace(/\/$/,''):''};lsSet(LOGIN_CFG_KEY,JSON.stringify(loginCfg))}
+function saveAuth(){lsSet(AUTH_KEY,JSON.stringify(auth))}
+function applyToken(tok){auth.token=tok;saveAuth();var store={};try{store=JSON.parse(lsGet(GHK))||{}}catch(e){}store.token=tok;lsSet(GHK,JSON.stringify(store));var tf=$('ghToken');if(tf)tf.value=tok}
+function hashStr(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return String(h)}
+function renderLoginBar(){
+  var bar=$('ghLoginBar'); if(!bar)return;
+  if(auth.token&&auth.user){
+    bar.innerHTML='<span style="font-weight:700">GitHubログイン中：@'+auth.user+'</span><button type="button" id="ghLogoutBtn">ログアウト</button><span style="font-size:12px;color:#4a5750">どの端末でも同じデータで編集できます</span>';
+    $('ghLogoutBtn').onclick=function(){auth={};saveAuth();var store={};try{store=JSON.parse(lsGet(GHK))||{}}catch(e){}store.token='';lsSet(GHK,JSON.stringify(store));var tf=$('ghToken');if(tf)tf.value='';renderLoginBar();status('ログアウトしました')};
+  } else {
+    bar.innerHTML='<button type="button" id="ghLoginBtn" style="background:#0c3b2e;color:#fff;border-color:#0c3b2e;font-weight:800;padding:10px 18px">GitHubでログイン</button><span style="font-size:12.5px;color:#4a5750">ログインすると、端末が変わっても同じデータで編集でき、保存＝公開になります</span><span id="ghLoginMsg" style="font-size:12.5px;font-weight:700"></span>';
+    $('ghLoginBtn').onclick=startLogin;
+  }
+}
+function loginMsg(m){var el=$('ghLoginMsg');if(el)el.textContent=m}
+function relayPost(path,params){
+  var body=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
+  return fetch(loginCfg.relay+path,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'},body:body}).then(function(r){return r.json()});
+}
+function startLogin(){
+  saveLoginCfg();
+  if(!loginCfg.clientId||!loginCfg.relay){if(det)det.open=true;status('先に「ログイン用アプリ番号」と「ログイン中継URL」を入れてください（準備手順どおりに取得できます）。',false);return}
+  loginMsg('GitHubに接続しています…');
+  relayPost('/login/device/code',{client_id:loginCfg.clientId,scope:'repo'}).then(function(d){
+    if(!d||!d.device_code){loginMsg('接続できませんでした。アプリ番号を確認してください');return}
+    var bar=$('ghLoginBar'); if(!bar)return;
+    bar.innerHTML='<span>GitHubの画面でこのコードを入力してください：</span><b style="font-size:20px;letter-spacing:.08em">'+d.user_code+'</b><a href="'+d.verification_uri+'" target="_blank" rel="noopener" style="background:#0c3b2e;color:#fff;padding:9px 14px;border-radius:8px;text-decoration:none;font-weight:800">GitHubを開く</a><span id="ghLoginMsg" style="font-size:12.5px;font-weight:700">承認を待っています…</span>';
+    var interval=(d.interval||5)+1, deadline=Date.now()+((d.expires_in||900)*1000);
+    (function poll(){
+      if(Date.now()>deadline){renderLoginBar();loginMsg('時間切れです。もう一度ログインしてください');return}
+      relayPost('/login/oauth/access_token',{client_id:loginCfg.clientId,device_code:d.device_code,grant_type:'urn:ietf:params:oauth:grant-type:device_code'}).then(function(t){
+        if(t&&t.access_token){
+          applyToken(t.access_token); if(t.refresh_token){auth.refresh=t.refresh_token;saveAuth()}
+          fetch('https://api.github.com/user',{headers:{'Authorization':'Bearer '+t.access_token,'Accept':'application/vnd.github+json'}}).then(function(r){return r.json()}).then(function(u){auth.user=(u&&u.login)||'';saveAuth();renderLoginBar();status('ログインしました'+(auth.user?'：@'+auth.user:'')+'。最新のデータを読み込みます…',true);autoLoad(true)}).catch(function(){renderLoginBar();autoLoad(true)});
+        } else if(t&&t.error==='slow_down'){interval+=5;setTimeout(poll,interval*1000)}
+        else if(t&&t.error==='authorization_pending'){setTimeout(poll,interval*1000)}
+        else if(t&&t.error){renderLoginBar();loginMsg('ログインできませんでした：'+t.error)}
+        else setTimeout(poll,interval*1000);
+      }).catch(function(){setTimeout(poll,interval*1000)});
+    })();
+  }).catch(function(){loginMsg('中継に接続できませんでした。URLを確認してください')});
+}
+function autoLoad(force){
+  var s=readSettings(); if(!s||!s.token)return;
+  getFile(s).then(function(f){ if(!f)return;
+    var text=b64dec(f.content); var d; try{d=JSON.parse(text)}catch(e){return}
+    if(!CFG.validate(d))return;
+    var local=lsGet(CFG.key)||'';
+    if(hashStr(text)===hashStr(local))return;
+    var sh=lsGet('ghSyncHash_'+CFG.id);
+    if(local&&sh&&hashStr(local)!==sh){status('この端末に未送信の編集があるため、自動読み込みを止めました。先に「GitHubへ保存する」か保存ボタンで送信してください');return}
+    try{if(sessionStorage.getItem('ghAuto_'+CFG.id)==='1'&&!force)return; sessionStorage.setItem('ghAuto_'+CFG.id,'1')}catch(e){}
+    lsSet(CFG.key,text); lsSet('ghSyncHash_'+CFG.id,hashStr(text));
+    status('GitHubの最新データを読み込みました',true);
+    setTimeout(function(){try{location.reload()}catch(e){}},500);
+  }).catch(function(){});
+}
+if(det){
+  var extra=document.createElement('div');
+  extra.innerHTML='<label>ログイン用アプリ番号（Client ID）</label><input id="ghClientId" placeholder="アプリ番号" autocomplete="off"><label>ログイン中継URL（Worker）</label><input id="ghRelay" placeholder="https://….workers.dev" autocomplete="off"><p style="font-size:12px;color:#666">ログインに使う2つの値です（準備手順参照）。入れた端末では、トークンの手貼りは不要になります。</p>';
+  det.appendChild(extra);
+  field('ghClientId', loginCfg.clientId||''); field('ghRelay', loginCfg.relay||'');
+  ['ghClientId','ghRelay'].forEach(function(id){var el=$(id); if(el) el.addEventListener('change',saveLoginCfg)});
+  var bar=document.createElement('div'); bar.id='ghLoginBar';
+  bar.style.cssText='display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#eef4f0;border:1.5px solid #0c3b2e;border-radius:10px;padding:12px 14px;margin:12px 0';
+  var main=document.querySelector('main');
+  if(main) main.insertBefore(bar, main.firstChild); else det.parentNode.insertBefore(bar, det);
+  renderLoginBar();
+  if(auth.token){ setTimeout(function(){autoLoad(false)},900); }
+}
+
 })();
 </script>
 <script>/*fileBanner*/if(location.protocol==='file:'){var b=document.createElement('div');b.style.cssText='background:#b91c1c;color:#fff;padding:10px 14px;font-size:14px;text-align:center';b.innerHTML='この画面（ファイル）からはサイトに公開できません。編集は <a href="https://ymizuno401-arch.github.io/company-site-prototype/admin/" style="color:#fff;text-decoration:underline">編集ページのURL</a> で開いてください';document.body.prepend(b)}</script>
