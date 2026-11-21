@@ -36,16 +36,20 @@ Disallow: /
 User-agent: Omgilibot
 Disallow: /
 
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: AI2Bot
+Disallow: /
+
 # ▼ AI検索・引用側（OAI-SearchBot / ChatGPT-User / PerplexityBot /
 #    Perplexity-User / Claude-User / Claude-SearchBot）は拒否しない。
 #    GEOで記事が引用される経路を残すため。
 
-# 通常の検索エンジン等は許可。ただし先方確認用ページだけは除外
-User-agent: *
-Disallow: /company-site-prototype/preview/
-
-Sitemap: https://ymizuno401-arch.github.io/company-site-prototype/sitemap.xml
-
+# 通常の検索エンジン等は許可。ただし管理画面・データ・先方確認用ページは除外
 User-agent: *
 Disallow: /company-site-prototype/admin/
 Disallow: /company-site-prototype/data/
+Disallow: /company-site-prototype/preview/
+
+Sitemap: https://ymizuno401-arch.github.io/company-site-prototype/sitemap.xml
