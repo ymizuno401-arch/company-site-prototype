@@ -20,6 +20,13 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 #toTop{position:fixed;right:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;border:1px solid #0c3b2e;background:#0c3b2e;color:#fff;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;cursor:pointer}
 .pv-hero{background:var(--green);color:#fff;border-radius:12px;padding:18px}.pv-sec{padding:14px 0 4px}
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gal img{width:100%;border-radius:8px}
+
+/* SNS-like simplicity */
+#savePubBtn,#mSavePub{background:#0c3b2e!important;color:#fff!important;border-color:#0c3b2e!important;font-size:15px!important;font-weight:800!important;padding:10px 20px!important}
+#saveDraftBtn,#saveReviewBtn,#saveSchedBtn,#mSaveDraft{background:#fff!important;color:#555!important}
+.badge.pub{background:#0c3b2e;color:#fff}.badge.sch{background:#1d6fb8;color:#fff}.badge.rev{background:#c26a00;color:#fff}
+details:has(#ghOwner){opacity:.75}
+details:has(#ghOwner) summary{font-size:13px}
 </style><meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
 <div id="site-gate" style="position:fixed;inset:0;z-index:99999;background:#14201a;display:flex;align-items:center;justify-content:center;padding:20px;">
@@ -55,7 +62,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px;color:#333}
 <p>メンバーごとの詳細ページを編集します。</p>
 <p><a href="./index.html">← ページ編集</a>　｜　<a href="./articles.html">お知らせ・インタビュー記事の編集 →</a></p></header>
 <details id="ghPanel" style="margin:12px 16px;background:#fff;border:1.5px solid #0c3b2e;border-radius:12px;padding:12px 16px">
-<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">運用者用：GitHub接続設定（使用感の確認では開く必要はありません）</summary>
+<summary style="font-weight:800;cursor:pointer;color:#0c3b2e">管理者設定（普段は開きません）</summary>
 <div style="display:grid;gap:8px;max-width:640px;margin-top:10px;font-size:13px">
 <label>リポジトリの持ち主 <input id="ghOwner" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
 <label>リポジトリ名 <input id="ghRepo" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></label>
@@ -99,15 +106,15 @@ let cur=members[0]?.id;let mFilter='all';
 const get=()=>members.find(m=>m.id===cur);
 function save(){safeSet(KEY,JSON.stringify(members));renderList();renderPreview()}
 function memberUrl(m){return 'https://ymizuno401-arch.github.io/company-site-prototype/members/'+(m.slug||sanitize(m.name)||m.id)+'/'}
-function renderList(){const tabsEl=document.getElementById('listTabs');if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['published','公開']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?members.length:members.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(mFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{mFilter=b.dataset.f;renderList()});}
-const box=document.getElementById('list');box.innerHTML='';[...members].filter(m=>mFilter==='all'||m.status===mFilter).forEach(m=>{const b=document.createElement('button');b.className='mi'+(m.id===cur?' on':'');b.innerHTML=`<b>${esc(m.name||'（名前未設定）')}</b><br><span style="font-size:11px;color:#666">${esc(m.role)}｜${m.status==='published'?'公開':'下書き'}</span>`;b.onclick=()=>{cur=m.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.appendChild(b)})}
+function renderList(){const tabsEl=document.getElementById('listTabs');if(tabsEl){const tabs=[['all','すべて'],['draft','下書き'],['published','公開中']];tabsEl.innerHTML=tabs.map(([k,v])=>{const n=k==='all'?members.length:members.filter(x=>x.status===k).length;return '<button type="button" data-f="'+k+'" style="padding:6px 12px;border-radius:999px;border:1px solid #0c3b2e;cursor:pointer;'+(mFilter===k?'background:#0c3b2e;color:#fff':'background:#fff;color:#0c3b2e')+'">'+v+' '+n+'</button>'}).join('');tabsEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{mFilter=b.dataset.f;renderList()});}
+const box=document.getElementById('list');box.innerHTML='';[...members].filter(m=>mFilter==='all'||m.status===mFilter).forEach(m=>{const b=document.createElement('button');b.className='mi'+(m.id===cur?' on':'');b.innerHTML=`<b>${esc(m.name||'（名前未設定）')}</b><br><span style="font-size:11px;color:#666">${esc(m.role)}｜${m.status==='published'?'● 公開中':'○ 下書き'}</span>`;b.onclick=()=>{cur=m.id;renderList();renderEditor();renderPreview();if(window.innerWidth<=1100)document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.appendChild(b)})}
 function renderEditor(){const ed=document.getElementById('editor');const m=get();if(!m){ed.innerHTML='<p class="note">メンバーがいません</p>';return}
  ed.innerHTML=`
  <div style="position:sticky;top:0;z-index:30;background:#fff;padding:10px 0;border-bottom:1.5px solid #0c3b2e;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
  <button type="button" id="mBackBtn">← 一覧</button>
- <button type="button" id="mSaveDraft">下書きとして保存</button>
- <button type="button" class="primary" id="mSavePub">公開して保存</button>
- <button type="button" id="mPreviewBtn">プレビューを見る</button>
+ <button type="button" id="mSaveDraft">下書き保存</button>
+ <button type="button" class="primary" id="mSavePub">公開する</button>
+ <button type="button" id="mPreviewBtn">プレビュー</button>
  <a href="https://ymizuno401-arch.github.io/company-site-prototype/cprime2/#members" target="_blank" rel="noopener" style="font-size:13px">サイトで確認 ↗</a>
  <span id="mSaveMsg" style="font-size:12.5px;color:#0c3b2e;font-weight:700"></span>
  </div>
