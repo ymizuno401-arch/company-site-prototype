@@ -130,6 +130,12 @@ body>header{background:var(--bg)!important}
  .edtabs{position:static!important}
  .panebox{margin-bottom:14px}
 }
+
+.col.hastabs{display:flex!important;flex-direction:column;overflow:hidden!important}
+.edscroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#b9b2a0 transparent}
+.edscroll::-webkit-scrollbar{width:8px}
+.edscroll::-webkit-scrollbar-thumb{background:#b9b2a0;border-radius:99px}
+@media(max-width:1099px){.edscroll{overflow:visible}.col.hastabs{display:block!important}}
 </style>
 <meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>

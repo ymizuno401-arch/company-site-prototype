@@ -131,6 +131,14 @@ body>header{background:var(--bg)!important}
  .edtabs{position:static!important}
  .panebox{margin-bottom:14px}
 }
+
+.col.hastabs{display:flex!important;flex-direction:column;overflow:hidden!important}
+.edscroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#b9b2a0 transparent}
+.edscroll::-webkit-scrollbar{width:8px}
+.edscroll::-webkit-scrollbar-thumb{background:#b9b2a0;border-radius:99px}
+@media(max-width:1099px){.edscroll{overflow:visible}.col.hastabs{display:block!important}}
+
+.hastabs #editor{min-height:0!important}
 </style>
 <meta name="robots" content="noindex,nofollow,noimageai">
 </head><body>
@@ -618,17 +626,21 @@ if(det){
         var edCol=cols0[1], pvCol=cols0[2];
         var tabbar=document.createElement('div'); tabbar.className='edtabs';
         tabbar.innerHTML='<button type="button" class="on" data-tab="edit">編集</button><button type="button" data-tab="pv">プレビュー</button>';
-        var pvWrap=document.createElement('div'); pvWrap.id='pvWrap'; pvWrap.style.display='none';
+        var pvWrap=document.createElement('div'); pvWrap.id='pvWrap'; pvWrap.style.display='none'; pvWrap.className='edscroll';
         while(pvCol.firstChild) pvWrap.appendChild(pvCol.firstChild);
-        edCol.appendChild(pvWrap); edCol.insertBefore(tabbar, edCol.firstChild);
+        var wrap=document.createElement('div'); wrap.className='col hastabs';
+        layout0.insertBefore(wrap, edCol);
+        wrap.appendChild(tabbar);
+        wrap.appendChild(edCol);
+        wrap.appendChild(pvWrap);
+        edCol.classList.remove('col'); edCol.classList.add('edscroll');
         pvCol.remove();
         DEFAULTS.articles=[300,null];
         window.__setTab=function(which){
           var ed=document.getElementById('editor');
-          if(ed) ed.style.display=(which==='pv')?'none':'';
+          if(ed){ ed.style.display=(which==='pv')?'none':''; ed.scrollTop=0; }
           pvWrap.style.display=(which==='pv')?'':'none';
           [].forEach.call(tabbar.querySelectorAll('button'),function(b){b.classList.toggle('on', b.getAttribute('data-tab')===which)});
-          edCol.scrollTop=0;
         };
         tabbar.addEventListener('click',function(e){var b=e.target.closest?e.target.closest('button[data-tab]'):null; if(b) window.__setTab(b.getAttribute('data-tab'))});
         document.addEventListener('click',function(e){if(e.target&&e.target.id==='toPreviewBtn'){e.stopPropagation();e.preventDefault();window.__setTab('pv')}},true);
