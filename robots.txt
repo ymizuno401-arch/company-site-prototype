@@ -1,17 +1,6 @@
-# AI学習・収集クローラーへの拒否（大手は robots.txt を遵守します）
+# 方針：AI「学習・収集」には使わせない。AI「検索・引用」（GEO）は通す。
+# ▼ 学習・収集用クローラー：拒否
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: OAI-SearchBot
-Disallow: /
-
-User-agent: ClaudeBot
-Disallow: /
-
-User-agent: Claude-User
 Disallow: /
 
 User-agent: CCBot
@@ -20,13 +9,10 @@ Disallow: /
 User-agent: Google-Extended
 Disallow: /
 
-User-agent: PerplexityBot
+User-agent: ClaudeBot
 Disallow: /
 
-User-agent: Perplexity-User
-Disallow: /
-
-User-agent: Bytespider
+User-agent: Applebot-Extended
 Disallow: /
 
 User-agent: Meta-ExternalAgent
@@ -35,7 +21,7 @@ Disallow: /
 User-agent: Meta-ExternalFetcher
 Disallow: /
 
-User-agent: Applebot-Extended
+User-agent: Bytespider
 Disallow: /
 
 User-agent: cohere-ai
@@ -49,6 +35,10 @@ Disallow: /
 
 User-agent: Omgilibot
 Disallow: /
+
+# ▼ AI検索・引用側（OAI-SearchBot / ChatGPT-User / PerplexityBot /
+#    Perplexity-User / Claude-User / Claude-SearchBot）は拒否しない。
+#    GEOで記事が引用される経路を残すため。
 
 # 通常の検索エンジン等は許可。ただし先方確認用ページだけは除外
 User-agent: *
